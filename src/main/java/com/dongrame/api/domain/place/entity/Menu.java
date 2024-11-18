@@ -16,7 +16,7 @@ public class Menu {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "place_id")
+    @JoinColumn(name = "placeId")
     private Place place;
 
     @Column(nullable = false)
