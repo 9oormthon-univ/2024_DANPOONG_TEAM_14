@@ -48,7 +48,6 @@ jobs:
           DOMAIN_URL: ${{ secrets.DOMAIN_URL }}
           ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
 
-
       # Docker 이미지 빌드
       - name: docker image build
         run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo .
