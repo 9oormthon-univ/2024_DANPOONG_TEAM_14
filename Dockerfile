@@ -1,5 +1,5 @@
 # 빌드 단계: Gradle 이미지 사용하여 Spring Boot 빌드
-FROM gradle:8.10.1-jdk17 AS build
+FROM gradle:8.5-jdk17 AS build
 
 # 작업 디렉토리 설정
 WORKDIR /app
