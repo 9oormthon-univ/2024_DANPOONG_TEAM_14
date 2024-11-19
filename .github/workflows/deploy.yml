@@ -34,7 +34,7 @@ jobs:
           cp src/main/resources/application.yml.template src/main/resources/application.yml
           envsubst < src/main/resources/application.yml.template > src/main/resources/application.yml
         env:
-          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_URL: ${{ secrets.DB_URL }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
