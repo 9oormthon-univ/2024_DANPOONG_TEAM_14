@@ -12,7 +12,9 @@ import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
         servers = {
-                @Server(url = "https://api.circleme.site", description = "동그라me https 서버입니다.")
+                @Server(url = "https://api.circleme.site", description = "동그라me https 서버입니다."),
+                @Server(url = "http://localhost:8050", description = "동그라me 로컬 환경 서버입니다."),
+                @Server(url = "http://localhost:8080", description = "동그라me 로컬 환경 서버입니다.")
         }
 )
 @Configuration
