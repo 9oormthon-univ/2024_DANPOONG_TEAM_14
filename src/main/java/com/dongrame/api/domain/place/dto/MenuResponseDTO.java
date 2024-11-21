@@ -14,15 +14,15 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MenuResponseDTO {
+
     private Long placeId;
 
     private List<Menu> menus;
 
-    public static MenuResponseDTO toMenuResponsetDTO(List<Menu> menus){
+    public static MenuResponseDTO toMenuResponseDTO(List<Menu> menus){
         Long id = menus.get(0).getPlace().getId();
-        List<Menu> menuList =menus.stream().map(menu -> Menu.builder()
+        List<Menu> menuList = menus.stream().map(menu -> Menu.builder()
                         .id(menu.getId())
-                        .url(menu.getUrl())
                         .name(menu.getName())
                         .price(menu.getPrice())
                         .build())

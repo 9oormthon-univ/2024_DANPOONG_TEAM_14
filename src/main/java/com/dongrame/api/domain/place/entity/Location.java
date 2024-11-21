@@ -1,5 +1,6 @@
 package com.dongrame.api.domain.place.entity;
 
+import com.dongrame.api.domain.place.dto.SearchPlaceRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Location {
+
     @Id
     private Long id; // 부모의 ID와 동일하게 설정
 
@@ -23,7 +25,11 @@ public class Location {
     @Column(nullable = false)
     private String longitude;
 
-    @Column(nullable = false)
-    private String address;
-
+    public static Location toLocation(SearchPlaceRequestDTO dto, Place place) {
+        return Location.builder()
+                .place(place)
+                .latitude(dto.getLatitude())
+                .longitude(dto.getLongitude())
+                .build();
+    }
 }

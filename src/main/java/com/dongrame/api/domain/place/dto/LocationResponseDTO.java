@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LocationResponseDTO {
+
     private Long placeId;
 
     private String latitude;
@@ -22,7 +23,6 @@ public class LocationResponseDTO {
     public static LocationResponseDTO toLocationResponseDTO(Location location){
         return LocationResponseDTO.builder()
                 .placeId(location.getPlace().getId())
-                .address(location.getAddress())
                 .latitude(location.getLatitude())
                 .longitude(location.getLongitude())
                 .build();

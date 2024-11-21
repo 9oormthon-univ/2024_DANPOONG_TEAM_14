@@ -11,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Menu {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,8 +23,5 @@ public class Menu {
     @Column(nullable = false)
     private String name;
 
-    private String url;
-
-    @Column(nullable = false)
     private Integer price;
 }

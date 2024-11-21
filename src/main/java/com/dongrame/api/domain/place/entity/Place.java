@@ -1,18 +1,20 @@
 package com.dongrame.api.domain.place.entity;
 
+import com.dongrame.api.domain.place.dto.SearchPlaceRequestDTO;
 import com.dongrame.api.domain.place.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Place extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,15 +22,9 @@ public class Place extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    private Float score;
+    private Double score;
 
-    private Integer review_num;
-
-    private String openingTime;
-
-    private String closingTime;
-
-    private String phoneNumber;
+    private Integer reviewNum;
 
     private String hashtag;
 
@@ -38,6 +34,15 @@ public class Place extends BaseEntity {
     private Location location;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
-    private List<Menu> menusList = new ArrayList<>();
+    private List<Menu> menus;
 
+    public static Place toPlace(SearchPlaceRequestDTO dto) {
+        return Place.builder()
+                .name(dto.getPlcaeName())
+                .build();
+    }
+
+    public void updateLocation(Location location) {
+        this.location = location;
+    }
 }
