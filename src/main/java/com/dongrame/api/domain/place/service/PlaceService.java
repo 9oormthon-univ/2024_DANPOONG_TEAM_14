@@ -1,12 +1,20 @@
 package com.dongrame.api.domain.place.service;
 
-
 import com.dongrame.api.domain.place.dao.LocationRepository;
 import com.dongrame.api.domain.place.dao.MenuRepository;
 import com.dongrame.api.domain.place.dao.PlaceRepository;
+import com.dongrame.api.domain.place.dao.SearchRepository;
+import com.dongrame.api.domain.place.dto.LocationResponseDTO;
+import com.dongrame.api.domain.place.dto.MenuResponseDTO;
+import com.dongrame.api.domain.place.dto.PlaceInfoResponseDTO;
+import com.dongrame.api.domain.place.dto.SearchPlaceRequestDTO;
+import com.dongrame.api.domain.place.dto.SearchPlaceResponseDTO;
 import com.dongrame.api.domain.place.entity.Location;
 import com.dongrame.api.domain.place.entity.Menu;
 import com.dongrame.api.domain.place.entity.Place;
+import com.dongrame.api.domain.place.entity.Search;
+import com.dongrame.api.domain.user.entity.User;
+import com.dongrame.api.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,30 +25,72 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PlaceService {
+
     private final PlaceRepository placeRepository;
     private final MenuRepository menuRepository;
     private final LocationRepository locationRepository;
+    private final SearchRepository searchRepository;
+    private final UserService userService;
 
     @Transactional
-    public Place getPlaceInfo(Long request){
-        return placeRepository.findById(request).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
-    }
-
-    @Transactional
-    public List<Menu> getMenus(Long request) {
-        List<Menu> menus = menuRepository.findByPlaceId(request);
-
-        // 메뉴가 존재하지 않을 경우 예외를 발생시킴
-        if (menus.isEmpty()) {
-            throw new RuntimeException("찾을 수 없습니다");
+    public Long saveSearchPlace(SearchPlaceRequestDTO dto) {
+        User currentUser = userService.getCurrentUser();
+        Location location = locationRepository.findByLatitudeAndLongitude(dto.getLatitude(), dto.getLongitude());
+        if(location == null) {
+            Place newPlace = saveNewPlaceAndLocation(dto);
+            saveNewSearch(currentUser, newPlace);
+            return newPlace.getId();
         }
+        Place place = placeRepository.findById(location.getId())
+                .orElseThrow(() -> new RuntimeException("해당 장소는 존재하지 않습니다."));
+        Search existingSearch = searchRepository.findByUserAndPlace(currentUser, place);
+        if(existingSearch != null) {
+            searchRepository.delete(existingSearch);
+        }
+        saveNewSearch(currentUser, place);
 
-        return menus; // 존재할 경우 메뉴 리스트 반환
+        return place.getId();
     }
 
-    @Transactional
-    public Location getLocation(Long request) {
-        return locationRepository.findById(request).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
+    private void saveNewSearch(User currentUser, Place newPlace) {
+        Search search = Search.toSearch(currentUser, newPlace);
+        searchRepository.save(search);
+    }
+
+    private Place saveNewPlaceAndLocation(SearchPlaceRequestDTO dto) {
+        Place newPlace = Place.toPlace(dto);
+        Location newLocation = Location.toLocation(dto, newPlace);
+        newPlace.updateLocation(newLocation);
+        placeRepository.save(newPlace);
+        return newPlace;
+    }
+
+    public List<SearchPlaceResponseDTO> getSearchPlace() {
+        User currentUser = userService.getCurrentUser();
+        List<Search> searches = searchRepository.findByUserOrderByCreatedAtDesc(currentUser);
+        return searches.stream()
+                .map(Search::getPlace)
+                .map(SearchPlaceResponseDTO::toSearchPlaceResponseDTO)
+                .toList();
+    }
+
+    public PlaceInfoResponseDTO getPlaceInfo(Long placeId){
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> new RuntimeException("장소를 찾을 수 없습니다"));
+        return PlaceInfoResponseDTO.toInfoResponseDTO(place);
+    }
+
+    public MenuResponseDTO getMenus(Long placeId) {
+        List<Menu> menus = menuRepository.findByPlaceId(placeId);
+        if(menus.isEmpty()) {
+            return null;
+        }
+        return MenuResponseDTO.toMenuResponseDTO(menus);
+    }
+
+    public LocationResponseDTO getLocation(Long placeId) {
+        Location location = locationRepository.findById(placeId)
+                .orElseThrow(() -> new RuntimeException("장소를 찾을 수 없습니다"));
+        return LocationResponseDTO.toLocationResponseDTO(location);
     }
 }
-
