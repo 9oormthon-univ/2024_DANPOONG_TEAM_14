@@ -48,8 +48,9 @@ public class ReviewLikeService {
         User savedUser=userRepository.findById(requset.getUserId()) .orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
 
         ReviewLike existingReviewLike = reviewLikeRepository.findByReviewAndUser(savedReview,savedUser);
-        if (existingReviewLike != null) {
-            reviewLikeRepository.delete(existingReviewLike);
+        if (existingReviewLike == null) {
+            throw new RuntimeException("찾을 수 없습니다");
         }
+        reviewLikeRepository.delete(existingReviewLike);
     }
 }

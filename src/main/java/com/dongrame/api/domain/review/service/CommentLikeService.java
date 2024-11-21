@@ -48,8 +48,9 @@ public class CommentLikeService {
         User savedUser=userRepository.findById(requset.getUserId()) .orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
 
         CommentLike existingCommentLike = commentLikeRepository.findByReviewCommentAndUser(savedReviewComment,savedUser);
-        if (existingCommentLike != null) {
-            commentLikeRepository.delete(existingCommentLike);
+        if (existingCommentLike == null) {
+            throw new RuntimeException("찾을 수 없습니다");
         }
+        commentLikeRepository.delete(existingCommentLike);
     }
 }

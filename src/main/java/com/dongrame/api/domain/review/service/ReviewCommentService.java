@@ -37,7 +37,8 @@ public class ReviewCommentService {
 
     @Transactional
     public void deleteReviewComment(Long reviewCommentId) {
-        reviewCommentRepository.deleteById(reviewCommentId);
+        ReviewComment savedReviewComment=reviewCommentRepository.findById(reviewCommentId).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
+        reviewCommentRepository.delete(savedReviewComment);
     }
 
     @Transactional
@@ -49,6 +50,7 @@ public class ReviewCommentService {
                     .commentId(reviewComment.getId())
                     .userId(reviewComment.getUser().getId())
                     .content(reviewComment.getContent())
+                    .likeNum(reviewComment.getLikeNum())
                     .build();
             savedReviewComments.add(addComment);
         }

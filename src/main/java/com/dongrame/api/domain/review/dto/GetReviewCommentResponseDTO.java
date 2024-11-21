@@ -14,5 +14,7 @@ public class GetReviewCommentResponseDTO {
 
     private Long userId;
 
+    private Integer likeNum;
+
     private String content;
 }
