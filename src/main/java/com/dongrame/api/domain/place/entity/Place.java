@@ -2,9 +2,11 @@ package com.dongrame.api.domain.place.entity;
 
 import com.dongrame.api.domain.place.dto.SearchPlaceRequestDTO;
 import com.dongrame.api.domain.place.entity.base.BaseEntity;
+import com.dongrame.api.domain.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,6 +37,9 @@ public class Place extends BaseEntity {
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
     private List<Menu> menus;
+
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
+    private List<Review> reviewsList = new ArrayList<>();
 
     public static Place toPlace(SearchPlaceRequestDTO dto) {
         return Place.builder()
