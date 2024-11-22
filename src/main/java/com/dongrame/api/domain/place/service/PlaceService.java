@@ -1,5 +1,7 @@
 package com.dongrame.api.domain.place.service;
 
+import com.dongrame.api.domain.bookmark.dao.BookmarkRepository;
+import com.dongrame.api.domain.bookmark.entity.Bookmark;
 import com.dongrame.api.domain.place.dao.LocationRepository;
 import com.dongrame.api.domain.place.dao.MenuRepository;
 import com.dongrame.api.domain.place.dao.PlaceRepository;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +34,7 @@ public class PlaceService {
     private final LocationRepository locationRepository;
     private final SearchRepository searchRepository;
     private final UserService userService;
+    private final BookmarkRepository bookmarkRepository;
 
     @Transactional
     public Long saveSearchPlace(SearchPlaceRequestDTO dto) {
@@ -77,7 +81,9 @@ public class PlaceService {
     public PlaceInfoResponseDTO getPlaceInfo(Long placeId){
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new RuntimeException("장소를 찾을 수 없습니다"));
-        return PlaceInfoResponseDTO.toInfoResponseDTO(place);
+        User currentUser = userService.getCurrentUser();
+        boolean isBookmarked = bookmarkRepository.findByUserAndPlace(currentUser, place).isPresent();
+        return PlaceInfoResponseDTO.toInfoResponseDTO(place, isBookmarked);
     }
 
     public MenuResponseDTO getMenus(Long placeId) {
