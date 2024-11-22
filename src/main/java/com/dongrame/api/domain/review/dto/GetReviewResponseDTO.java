@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetReviewResponseDTO {
+    private Long reviewId;
 
     private String title;
 

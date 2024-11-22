@@ -38,10 +38,20 @@ public class ReviewController {
         return ApiResponse.success(PostReviewResponseDTO.toReviewResponseDTO(newReview));
     }
 
-    @Operation(summary = "리뷰 조회", description = "리뷰를 조회합니다.")
-    @GetMapping("/getReview")
-    public ApiResponse<GetReviewResponseDTO> getReview(@RequestParam(name = "reviewId") Long request) {
-        return ApiResponse.success(reviewService.getReview(request));
+    @Operation(summary = "가게 리뷰들 조회", description = "가게 리뷰들을 조회합니다.")
+    @GetMapping("/getPlaceReview/{placeId}")
+    public ApiResponse<List<GetReviewResponseDTO>> getPlaceReview(
+            @PathVariable Long placeId,
+            @RequestParam(name ="page",defaultValue = "0") int page) {
+        return ApiResponse.success(reviewService.getPlaceReview(placeId,page));
+    }
+
+    @Operation(summary = "유저 리뷰들 조회", description = "유저 리뷰들을 조회합니다.")
+    @GetMapping("/getUserReview/{userId}")
+    public ApiResponse<List<GetReviewResponseDTO>> getUserReview(
+            @PathVariable Long userId,
+            @RequestParam(name ="page",defaultValue = "0") int page) {
+        return ApiResponse.success(reviewService.getUserReview(userId,page));
     }
 
     @Operation(summary = "리뷰 수정", description = "리뷰를 수정합니다.")

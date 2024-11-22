@@ -14,10 +14,13 @@ import com.dongrame.api.domain.review.entity.ReviewLike;
 import com.dongrame.api.domain.user.entity.User;
 import com.dongrame.api.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +49,9 @@ public class ReviewService {
                 .place(place)
                 .user(currentUser)
                 .build();
+        place.setScore((place.getScore() * place.getReviewNum()+ request.getScore())/(place.getReviewNum()+1));
+        place.setReviewNum(place.getReviewNum()+1);
+        placeRepository.save(place);
         reviewRepository.save(newReview);
         if (images != null) {
             validateImages(images);
@@ -55,27 +61,52 @@ public class ReviewService {
     }
 
     @Transactional
-    public GetReviewResponseDTO getReview(Long reviewId) {
-        Review review=reviewRepository.findById(reviewId).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
-        ReviewLike reviewLike=reviewLikeRepository.findByReviewAndUser(review,userService.getCurrentUser());
-        boolean liked=true;
-        if(reviewLike==null){
-            liked=false;
-        }
-        List<String> imageUrl= imagRepository.findByReviewId(reviewId).stream()
-                .map(ReviewImag::getImageUrl)
-                .collect(Collectors.toList());
-        return GetReviewResponseDTO.builder()
-                .userId(review.getUser().getId())
-                .placeName(review.getPlace().getName())
-                .title(review.getTitle())
-                .content(review.getContent())
-                .score(review.getScore())
-                .likeNum(review.getLikeNum())
-                .liked(liked)
-                .imageUrl(imageUrl)
-                .build();
+    public List<GetReviewResponseDTO> getPlaceReview(Long placeId,int page) {
+        Page<Review> reviewPage=reviewRepository.findByPlaceId(placeId, PageRequest.of(page,10));
+        return convertToDTOs(reviewPage);
     }
+
+    @Transactional
+    public List<GetReviewResponseDTO> getUserReview(Long userId,int page) {
+        Page<Review> reviewPage=reviewRepository.findByUserId(userId, PageRequest.of(page,10));
+        return convertToDTOs(reviewPage);
+    }
+
+    @Transactional
+    public List<GetReviewResponseDTO> convertToDTOs(Page<Review> reviewPage) {
+        List<GetReviewResponseDTO> DTOs = new ArrayList<>();
+        User currentUser = userService.getCurrentUser(); // 현재 사용자 정보 가져오기
+
+        for (Review review : reviewPage) {
+            // 현재 사용자가 해당 리뷰를 좋아했는지 확인
+            ReviewLike reviewLike = reviewLikeRepository.findByReviewAndUser(review, currentUser);
+            boolean liked = reviewLike != null;
+
+            // 리뷰에 대한 이미지 URL 목록 가져오기
+            List<String> imageUrl = imagRepository.findByReviewId(review.getId()).stream()
+                    .map(ReviewImag::getImageUrl)
+                    .collect(Collectors.toList());
+
+            // DTO 생성
+            GetReviewResponseDTO DTO = GetReviewResponseDTO.builder()
+                    .reviewId(review.getId())
+                    .userId(review.getUser().getId())
+                    .placeName(review.getPlace().getName())
+                    .title(review.getTitle())
+                    .content(review.getContent())
+                    .score(review.getScore())
+                    .likeNum(review.getLikeNum())
+                    .liked(liked)
+                    .imageUrl(imageUrl)
+                    .build();
+
+            DTOs.add(DTO);
+        }
+
+        return DTOs;
+    }
+
+
 
     @Transactional
     public Review updateReview(PatchReviewRequestDTO request,List<MultipartFile> images){
