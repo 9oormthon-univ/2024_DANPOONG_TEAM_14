@@ -46,6 +46,7 @@ public class Place extends BaseEntity {
                 .name(dto.getPlcaeName())
                 .score(0.0)
                 .reviewNum(0)
+                .category(dto.getCategory())
                 .build();
     }
 
