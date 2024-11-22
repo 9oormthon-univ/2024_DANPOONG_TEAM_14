@@ -5,7 +5,6 @@ import com.dongrame.api.domain.bookmark.dto.BookmarkResponseDto;
 import com.dongrame.api.domain.bookmark.entity.Bookmark;
 import com.dongrame.api.domain.place.dao.PlaceRepository;
 import com.dongrame.api.domain.place.entity.Place;
-import com.dongrame.api.domain.place.service.PlaceService;
 import com.dongrame.api.domain.user.entity.User;
 import com.dongrame.api.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +34,16 @@ public class BookmarkService {
         return bookmark.getId();
     }
 
+    @Transactional
+    public void deleteBookmark(List<Long> placeIds) {
+        User currentUser = userService.getCurrentUser();
+        List<Bookmark> bookmarks = placeIds.stream()
+                .map(placeId -> placeRepository.findById(placeId).orElseThrow(() -> new RuntimeException("해당 장소는 없습니다.")))
+                .map(place -> bookmarkRepository.findByUserAndPlace(currentUser, place).orElseThrow(() -> new RuntimeException("해당 북마크가 존재하지 않습니다.")))
+                .toList();
+        bookmarkRepository.deleteAll(bookmarks);
+    }
+
     public List<BookmarkResponseDto> getBookmarks() {
         User currentUser = userService.getCurrentUser();
         List<Bookmark> bookmarks = bookmarkRepository.findByUserOrderByCreatedAtDesc(currentUser);
@@ -45,16 +53,5 @@ public class BookmarkService {
         return bookmarks.stream()
                 .map(BookmarkResponseDto::toBookmarkResponseDto)
                 .toList();
-    }
-
-    @Transactional
-    public Long deleteBookmark(Long placeId) {
-        User currentUser = userService.getCurrentUser();
-        Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new RuntimeException("해당 장소는 없습니다."));
-        Bookmark bookmark = bookmarkRepository.findByUserAndPlace(currentUser, place)
-                .orElseThrow(() -> new RuntimeException("해당 북마크는 존재하지 않습니다."));
-        bookmarkRepository.delete(bookmark);
-        return bookmark.getId();
     }
 }
