@@ -41,10 +41,10 @@ public class BookmarkController {
 
     @Operation(summary = "내 북마크 삭제", description = "내 북마크를 삭제합니다.")
     @DeleteMapping("/delete")
-    public ApiResponse<Long> getBookmarks(
-            @RequestParam Long placeId
+    public ApiResponse<?> getBookmarks(
+            @RequestParam List<Long> placeIds
     ) {
-        Long id = bookmarkService.deleteBookmark(placeId);
-        return ApiResponse.success(id);
+        bookmarkService.deleteBookmark(placeIds);
+        return ApiResponse.successWithNoContent();
     }
 }
