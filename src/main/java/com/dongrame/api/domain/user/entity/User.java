@@ -1,5 +1,6 @@
 package com.dongrame.api.domain.user.entity;
 
+import com.dongrame.api.domain.bookmark.entity.Bookmark;
 import com.dongrame.api.domain.review.entity.CommentLike;
 import com.dongrame.api.domain.review.entity.Review;
 import com.dongrame.api.domain.review.entity.ReviewComment;
@@ -38,6 +39,11 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    private int age;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
@@ -56,6 +62,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<CommentLike> commentLikes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Bookmark> bookmarks = new ArrayList<>();
+
     public void updateUserType(UserType userType) {
         this.userType = userType;
     }
@@ -64,5 +73,7 @@ public class User {
         this.nickname = dto.getUsername();
         this.email = dto.getEmail();
         this.userType = dto.getUserType();
+        this.age = dto.getAge();
+        this.gender = dto.getGender();
     }
 }
