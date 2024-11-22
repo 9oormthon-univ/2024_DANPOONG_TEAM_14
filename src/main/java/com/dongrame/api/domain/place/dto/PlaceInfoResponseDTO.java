@@ -22,13 +22,16 @@ public class PlaceInfoResponseDTO {
 
     private String category;
 
-    public static PlaceInfoResponseDTO toInfoResponseDTO(Place place){
+    private boolean isBookmarked;
+
+    public static PlaceInfoResponseDTO toInfoResponseDTO(Place place, boolean isBookmarked) {
         return PlaceInfoResponseDTO.builder()
                 .placeId(place.getId())
                 .name(place.getName())
                 .score(place.getScore())
                 .reviewNum(place.getReviewNum())
                 .category(place.getCategory())
+                .isBookmarked(isBookmarked)
                 .build();
     }
 }
