@@ -51,6 +51,8 @@ public class ReviewLikeService {
         if (existingReviewLike == null) {
             throw new RuntimeException("찾을 수 없습니다");
         }
+        savedReview.setLikeNum(savedReview.getLikeNum()-1);
+        reviewRepository.save(savedReview);
         reviewLikeRepository.delete(existingReviewLike);
     }
 }

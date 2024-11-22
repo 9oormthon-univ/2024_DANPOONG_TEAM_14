@@ -5,6 +5,7 @@ import com.dongrame.api.domain.place.entity.Place;
 import com.dongrame.api.domain.review.dao.ReviewImagRepository;
 import com.dongrame.api.domain.review.dao.ReviewLikeRepository;
 import com.dongrame.api.domain.review.dao.ReviewRepository;
+import com.dongrame.api.domain.review.dto.GetDetailReviewResponseDTO;
 import com.dongrame.api.domain.review.dto.GetReviewResponseDTO;
 import com.dongrame.api.domain.review.dto.PatchReviewRequestDTO;
 import com.dongrame.api.domain.review.dto.PostReviewRequestDTO;
@@ -35,6 +36,7 @@ public class ReviewService {
 
     private final ReviewImagService reviewImagService;
     private final UserService userService;
+    private final ReviewCommentService reviewCommentService;
 
 
 
@@ -61,51 +63,60 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<GetReviewResponseDTO> getPlaceReview(Long placeId,int page) {
+    public GetDetailReviewResponseDTO getDetailReview(Long reviewid) {
+        Review savedReview=reviewRepository.findById(reviewid).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
+
+        return GetDetailReviewResponseDTO.builder()
+                .review(convertToDTO(savedReview))
+                .comments(reviewCommentService.getReviewComment(reviewid))
+                .build();
+    }
+
+    @Transactional
+    public List<GetReviewResponseDTO> getPlaceReviews(Long placeId,int page) {
         Page<Review> reviewPage=reviewRepository.findByPlaceId(placeId, PageRequest.of(page,10));
-        return convertToDTOs(reviewPage);
-    }
-
-    @Transactional
-    public List<GetReviewResponseDTO> getUserReview(Long userId,int page) {
-        Page<Review> reviewPage=reviewRepository.findByUserId(userId, PageRequest.of(page,10));
-        return convertToDTOs(reviewPage);
-    }
-
-    @Transactional
-    public List<GetReviewResponseDTO> convertToDTOs(Page<Review> reviewPage) {
         List<GetReviewResponseDTO> DTOs = new ArrayList<>();
-        User currentUser = userService.getCurrentUser(); // 현재 사용자 정보 가져오기
-
         for (Review review : reviewPage) {
-            // 현재 사용자가 해당 리뷰를 좋아했는지 확인
-            ReviewLike reviewLike = reviewLikeRepository.findByReviewAndUser(review, currentUser);
-            boolean liked = reviewLike != null;
-
-            // 리뷰에 대한 이미지 URL 목록 가져오기
-            List<String> imageUrl = imagRepository.findByReviewId(review.getId()).stream()
-                    .map(ReviewImag::getImageUrl)
-                    .collect(Collectors.toList());
-
-            // DTO 생성
-            GetReviewResponseDTO DTO = GetReviewResponseDTO.builder()
-                    .reviewId(review.getId())
-                    .userId(review.getUser().getId())
-                    .placeName(review.getPlace().getName())
-                    .title(review.getTitle())
-                    .content(review.getContent())
-                    .score(review.getScore())
-                    .likeNum(review.getLikeNum())
-                    .liked(liked)
-                    .imageUrl(imageUrl)
-                    .build();
-
-            DTOs.add(DTO);
+            DTOs.add(convertToDTO(review));
         }
-
         return DTOs;
     }
 
+    @Transactional
+    public List<GetReviewResponseDTO> getUserReviews(Long userId,int page) {
+        Page<Review> reviewPage=reviewRepository.findByUserId(userId, PageRequest.of(page,10));
+        List<GetReviewResponseDTO> DTOs = new ArrayList<>();
+        for (Review review : reviewPage) {
+            DTOs.add(convertToDTO(review));
+        }
+        return DTOs;
+    }
+
+    @Transactional
+    public GetReviewResponseDTO convertToDTO(Review review) {
+        User currentUser = userService.getCurrentUser(); // 현재 사용자 정보 가져오기
+
+        // 현재 사용자가 해당 리뷰를 좋아했는지 확인
+        ReviewLike reviewLike = reviewLikeRepository.findByReviewAndUser(review, currentUser);
+        boolean liked = reviewLike != null;
+
+        // 리뷰에 대한 이미지 URL 목록 가져오기
+        List<String> imageUrl = imagRepository.findByReviewId(review.getId()).stream()
+                .map(ReviewImag::getImageUrl)
+                .collect(Collectors.toList());
+
+        return GetReviewResponseDTO.builder()
+                .reviewId(review.getId())
+                .userId(review.getUser().getId())
+                .placeName(review.getPlace().getName())
+                .title(review.getTitle())
+                .content(review.getContent())
+                .score(review.getScore())
+                .likeNum(review.getLikeNum())
+                .liked(liked)
+                .imageUrl(imageUrl)
+                .build();
+    }
 
 
     @Transactional

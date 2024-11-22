@@ -33,9 +33,9 @@ public class CommentLikeService {
                 .reviewComment(savedReviewComment)
                 .user(currentUser)
                 .build();
-        commentLikeRepository.save(savedCommentLike);
         savedReviewComment.setLikeNum(savedReviewComment.getLikeNum()+1);
         commentRepository.save(savedReviewComment);
+        commentLikeRepository.save(savedCommentLike);
         return CommentLikeDTO.builder()
                 .commentId(requset)
                 .userId(currentUser.getId())
@@ -51,6 +51,8 @@ public class CommentLikeService {
         if (existingCommentLike == null) {
             throw new RuntimeException("찾을 수 없습니다");
         }
+        savedReviewComment.setLikeNum(savedReviewComment.getLikeNum()-1);
+        commentRepository.save(savedReviewComment);
         commentLikeRepository.delete(existingCommentLike);
     }
 }

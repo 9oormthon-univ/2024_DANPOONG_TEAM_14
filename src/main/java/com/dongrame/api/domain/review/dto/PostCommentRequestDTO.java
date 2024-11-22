@@ -11,8 +11,5 @@ public class PostCommentRequestDTO {
     private Long reviewId;
 
     @NotNull
-    private Long userId;
-
-    @NotNull
     private String comment;
 }

@@ -38,20 +38,26 @@ public class ReviewController {
         return ApiResponse.success(PostReviewResponseDTO.toReviewResponseDTO(newReview));
     }
 
-    @Operation(summary = "가게 리뷰들 조회", description = "가게 리뷰들을 조회합니다.")
-    @GetMapping("/getPlaceReview/{placeId}")
-    public ApiResponse<List<GetReviewResponseDTO>> getPlaceReview(
+    @Operation(summary = "가게 리뷰 리스트 조회", description = "가게 리뷰 리스트를 조회합니다.")
+    @GetMapping("/getPlaceReviews/{placeId}")
+    public ApiResponse<List<GetReviewResponseDTO>> getPlaceReviews(
             @PathVariable Long placeId,
             @RequestParam(name ="page",defaultValue = "0") int page) {
-        return ApiResponse.success(reviewService.getPlaceReview(placeId,page));
+        return ApiResponse.success(reviewService.getPlaceReviews(placeId,page));
     }
 
-    @Operation(summary = "유저 리뷰들 조회", description = "유저 리뷰들을 조회합니다.")
-    @GetMapping("/getUserReview/{userId}")
-    public ApiResponse<List<GetReviewResponseDTO>> getUserReview(
+    @Operation(summary = "유저 리뷰 리스트 조회", description = "유저 리뷰 리스트를 조회합니다.")
+    @GetMapping("/getUserReviews/{userId}")
+    public ApiResponse<List<GetReviewResponseDTO>> getUserReviews(
             @PathVariable Long userId,
             @RequestParam(name ="page",defaultValue = "0") int page) {
-        return ApiResponse.success(reviewService.getUserReview(userId,page));
+        return ApiResponse.success(reviewService.getUserReviews(userId,page));
+    }
+
+    @Operation(summary = "리뷰 상세 조회", description = "리뷰를 상세 조회합니다.")
+    @GetMapping("/getDetailReview")
+    public ApiResponse<GetDetailReviewResponseDTO> getDetailReview(@RequestParam(name = "reviewId") Long request) {
+        return ApiResponse.success(reviewService.getDetailReview(request));
     }
 
     @Operation(summary = "리뷰 수정", description = "리뷰를 수정합니다.")
@@ -80,12 +86,6 @@ public class ReviewController {
     public ApiResponse<String> deleteComment(@RequestParam(name = "commentId") Long request) {
         reviewCommentService.deleteReviewComment(request);
         return ApiResponse.success("Comment deleted.");
-    }
-
-    @Operation(summary = "리뷰 댓글 조회", description = "리뷰 댓글을 조회합니다.")
-    @GetMapping("/getComment")
-    public ApiResponse<List<GetReviewCommentResponseDTO>> getComment(@RequestParam(name = "reviewId") Long request) {
-        return ApiResponse.success(reviewCommentService.getReviewComment(request));
     }
 
     @Operation(summary = "리뷰 좋아요 등록", description = "리뷰 좋아요를 등록합니다.")
