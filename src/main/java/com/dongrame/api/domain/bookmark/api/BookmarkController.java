@@ -1,6 +1,5 @@
 package com.dongrame.api.domain.bookmark.api;
 
-import com.dongrame.api.domain.bookmark.dto.BookmarkRequestDto;
 import com.dongrame.api.domain.bookmark.dto.BookmarkResponseDto;
 import com.dongrame.api.domain.bookmark.service.BookmarkService;
 import com.dongrame.api.global.util.ApiResponse;
@@ -9,10 +8,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -28,9 +26,9 @@ public class BookmarkController {
     @Operation(summary = "북마크 등록", description = "북마크를 등록합니다.")
     @PostMapping("/save")
     public ApiResponse<Long> saveBookmark(
-        @RequestBody BookmarkRequestDto dto
+        @RequestParam Long placeId
     ) {
-        Long id = bookmarkService.saveBookmark(dto.getPlaceId());
+        Long id = bookmarkService.saveBookmark(placeId);
         return ApiResponse.success(id);
     }
 
@@ -42,9 +40,9 @@ public class BookmarkController {
     }
 
     @Operation(summary = "내 북마크 삭제", description = "내 북마크를 삭제합니다.")
-    @DeleteMapping("/delete/{placeId}")
+    @DeleteMapping("/delete")
     public ApiResponse<Long> getBookmarks(
-            @PathVariable Long placeId
+            @RequestParam Long placeId
     ) {
         Long id = bookmarkService.deleteBookmark(placeId);
         return ApiResponse.success(id);
