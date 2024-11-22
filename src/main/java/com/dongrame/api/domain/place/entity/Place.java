@@ -44,6 +44,8 @@ public class Place extends BaseEntity {
     public static Place toPlace(SearchPlaceRequestDTO dto) {
         return Place.builder()
                 .name(dto.getPlcaeName())
+                .score(0.0)
+                .reviewNum(0)
                 .build();
     }
 
