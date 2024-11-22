@@ -45,13 +45,13 @@ public class User {
     private boolean active = true;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Review> reviewsList = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<ReviewComment> reviewCommentList = new ArrayList<>();
+    private List<ReviewComment> reviewComments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<ReviewLike> reviewLikeList = new ArrayList<>();
+    private List<ReviewLike> reviewLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<CommentLike> commentLikes = new ArrayList<>();

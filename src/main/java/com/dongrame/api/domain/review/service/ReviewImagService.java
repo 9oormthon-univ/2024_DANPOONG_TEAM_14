@@ -42,7 +42,7 @@ public class ReviewImagService {
     }
 
     @Transactional
-    public void postReviewImag(Long reviewId, List<MultipartFile> images) {
+    public void saveReviewImag(Long reviewId, List<MultipartFile> images) {
         if (images.size() > 3) {
             throw new RuntimeException("크기 초과");
         }

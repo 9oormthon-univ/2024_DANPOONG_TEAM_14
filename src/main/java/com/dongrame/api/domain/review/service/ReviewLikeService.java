@@ -5,8 +5,8 @@ import com.dongrame.api.domain.review.dao.ReviewRepository;
 import com.dongrame.api.domain.review.dto.LikeDTO;
 import com.dongrame.api.domain.review.entity.Review;
 import com.dongrame.api.domain.review.entity.ReviewLike;
-import com.dongrame.api.domain.user.dao.UserRepository;
 import com.dongrame.api.domain.user.entity.User;
+import com.dongrame.api.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,37 +17,37 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewLikeService {
     private final ReviewLikeRepository reviewLikeRepository;
     private final ReviewRepository reviewRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Transactional
-    public LikeDTO postLike(LikeDTO requset) {
-        Review savedReview=reviewRepository.findById(requset.getReviewId()).orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
-        User savedUser=userRepository.findById(requset.getUserId()) .orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
+    public LikeDTO saveLike(Long requset) {
+        Review savedReview=reviewRepository.findById(requset).orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
+        User currentUser=userService.getCurrentUser();
 
-        ReviewLike existingReviewLike = reviewLikeRepository.findByReviewAndUser(savedReview,savedUser);
+        ReviewLike existingReviewLike = reviewLikeRepository.findByReviewAndUser(savedReview,currentUser);
         if (existingReviewLike != null) {
             throw new RuntimeException("이미 좋아요를 누르셨습니다."); // 또는 적절한 예외 처리
         }
 
         ReviewLike savedReviewLike=ReviewLike.builder()
                 .review(savedReview)
-                .user(savedUser)
+                .user(currentUser)
                 .build();
         reviewLikeRepository.save(savedReviewLike);
         savedReview.setLikeNum(savedReview.getLikeNum()+1);
         reviewRepository.save(savedReview);
         return LikeDTO.builder()
-                .reviewId(requset.getReviewId())
-                .userId(requset.getUserId())
+                .reviewId(requset)
+                .userId(currentUser.getId())
                 .build();
     }
 
     @Transactional
-    public void deleteLike(LikeDTO requset) {
-        Review savedReview=reviewRepository.findById(requset.getReviewId()).orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
-        User savedUser=userRepository.findById(requset.getUserId()) .orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
+    public void deleteLike(Long requset) {
+        Review savedReview=reviewRepository.findById(requset).orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
+        User currentUser=userService.getCurrentUser();
 
-        ReviewLike existingReviewLike = reviewLikeRepository.findByReviewAndUser(savedReview,savedUser);
+        ReviewLike existingReviewLike = reviewLikeRepository.findByReviewAndUser(savedReview,currentUser);
         if (existingReviewLike == null) {
             throw new RuntimeException("찾을 수 없습니다");
         }

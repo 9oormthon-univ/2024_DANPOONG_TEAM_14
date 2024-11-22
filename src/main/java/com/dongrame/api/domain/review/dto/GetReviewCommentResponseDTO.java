@@ -17,4 +17,6 @@ public class GetReviewCommentResponseDTO {
     private Integer likeNum;
 
     private String content;
+
+    private boolean liked;
 }

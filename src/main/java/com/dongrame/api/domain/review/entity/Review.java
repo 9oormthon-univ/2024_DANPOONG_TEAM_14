@@ -44,12 +44,12 @@ public class Review {
     private User user;
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
-    private List<ReviewImag> reviewImagList = new ArrayList<>();
+    private List<ReviewImag> reviewImags = new ArrayList<>();
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
-    private List<ReviewComment> reviewCommentList = new ArrayList<>();
+    private List<ReviewComment> reviewComments = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
-    private List<ReviewLike> reviewLikeList = new ArrayList<>();
+    private List<ReviewLike> reviewLikes = new ArrayList<>();
 }

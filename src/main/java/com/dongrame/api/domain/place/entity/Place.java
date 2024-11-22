@@ -39,7 +39,7 @@ public class Place extends BaseEntity {
     private List<Menu> menus;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
-    private List<Review> reviewsList = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
 
     public static Place toPlace(SearchPlaceRequestDTO dto) {
         return Place.builder()

@@ -25,6 +25,8 @@ public class GetReviewResponseDTO {
 
     private String placeName;
 
+    private boolean liked;
+
     private List<String> imageUrl;
 
 }
