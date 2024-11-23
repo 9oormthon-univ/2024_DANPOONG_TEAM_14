@@ -47,7 +47,7 @@ public class ReviewImagService {
             throw new RuntimeException("크기 초과");
         }
 
-        String uploadDir = System.getProperty("user.home") + "/uploads/";
+        String uploadDir = "/uploads/";
         File dir = new File(uploadDir);
         if (!dir.exists()) {
             boolean dirCreated = dir.mkdirs(); // 디렉토리 생성 시 반환 값을 확인
