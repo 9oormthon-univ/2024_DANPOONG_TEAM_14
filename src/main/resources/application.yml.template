@@ -62,8 +62,8 @@ spring:
 url:
   redirectUrl:
     onBoard: "http://localhost:5173/accept"
-    main: "http://localhost:5173/circle-me
-  domain: "http://localhost:5173"
+    main: "http://localhost:5173/circle-me"
+  domain: "localhost:5173"
 
 cors:
   allowed-origins:
