@@ -12,6 +12,8 @@ public class UserResponseDto {
     private String kakaoId;
     private String username;
     private String email;
+    private boolean isProfileImageUpdated;
+    private String profileImageUrl;
     private UserType userType;
     private int reviewNum;
     private int bookmarkNum;
@@ -21,6 +23,8 @@ public class UserResponseDto {
                 .kakaoId(user.getKakaoId())
                 .username(user.getNickname())
                 .email(user.getEmail())
+                .isProfileImageUpdated(user.isProfileImageUpdated())
+                .profileImageUrl(user.getProfileImage())
                 .userType(user.getUserType())
                 .reviewNum(user.getReviews().size())
                 .bookmarkNum(user.getBookmarks().size())

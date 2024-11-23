@@ -45,6 +45,9 @@ public class User {
     @Column(nullable = false)
     private boolean active = true;
 
+    @Column(nullable = false)
+    private boolean isProfileImageUpdated = false;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Review> reviews = new ArrayList<>();
 
@@ -68,5 +71,10 @@ public class User {
         this.nickname = dto.getUsername();
         this.email = dto.getEmail();
         this.userType = dto.getUserType();
+    }
+
+    public void updateProfileImage(String newProfileImage) {
+        this.profileImage = newProfileImage;
+        this.isProfileImageUpdated = true;
     }
 }
