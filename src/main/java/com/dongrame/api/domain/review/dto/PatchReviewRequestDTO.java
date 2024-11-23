@@ -1,5 +1,6 @@
 package com.dongrame.api.domain.review.dto;
 
+import com.dongrame.api.domain.review.entity.Score;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,6 @@ public class PatchReviewRequestDTO {
     private String content;
 
     @NotNull
-    private Float score;
+    private Score score;
 
 }

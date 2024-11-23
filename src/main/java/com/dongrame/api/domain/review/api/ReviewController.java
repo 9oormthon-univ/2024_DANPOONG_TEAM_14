@@ -28,7 +28,10 @@ public class ReviewController {
     private final ReviewLikeService reviewLikeService;
     private final CommentLikeService commentLikeService;
 
-    @Operation(summary = "리뷰 작성", description = "리뷰를 작성합니다.")
+    @Operation(summary = "리뷰 작성", description = "리뷰를 작성합니다.<br>" +
+            "- GOOD : 편했어요<br>" +
+            "- SOSO : 조금 불편했어요<br>" +
+            "- BAD : 불편했어요<br>")
     @PostMapping(value = "/saveReview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<PostReviewResponseDTO> postReview(
             @RequestPart @Valid PostReviewRequestDTO request,
@@ -60,7 +63,10 @@ public class ReviewController {
         return ApiResponse.success(reviewService.getDetailReview(request));
     }
 
-    @Operation(summary = "리뷰 수정", description = "리뷰를 수정합니다.")
+    @Operation(summary = "리뷰 수정", description = "리뷰를 수정합니다.<br>"+
+            "- GOOD : 편했어요<br>" +
+            "- SOSO : 조금 불편했어요<br>" +
+            "- BAD : 불편했어요<br>")
     @PatchMapping(value ="/updateReview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<PatchReviewResponseDTO> patchReview(
             @RequestPart @Valid PatchReviewRequestDTO request,

@@ -18,7 +18,7 @@ public class GetReviewResponseDTO {
 
     private String content;
 
-    private Float score;
+    private String score;
 
     private Integer likeNum;
 

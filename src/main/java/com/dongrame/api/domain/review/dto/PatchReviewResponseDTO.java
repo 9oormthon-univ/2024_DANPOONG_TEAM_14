@@ -17,14 +17,14 @@ public class PatchReviewResponseDTO {
 
     private String content;
 
-    private Float score;
+    private String score;
 
     public static PatchReviewResponseDTO toPatchReviewResponseDTO(Review requst) {
         return PatchReviewResponseDTO.builder()
                 .reviewid(requst.getId())
                 .title(requst.getTitle())
                 .content(requst.getContent())
-                .score(requst.getScore())
+                .score(requst.getScore().getScore())
                 .build();
     }
 }

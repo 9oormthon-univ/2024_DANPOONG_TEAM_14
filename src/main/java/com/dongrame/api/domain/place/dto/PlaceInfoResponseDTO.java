@@ -16,7 +16,11 @@ public class PlaceInfoResponseDTO {
 
     private String name;
 
-    private Double score;
+    private Integer GOOD;
+
+    private Integer SOSO;
+
+    private Integer BAD;
 
     private Integer reviewNum;
 
@@ -28,7 +32,9 @@ public class PlaceInfoResponseDTO {
         return PlaceInfoResponseDTO.builder()
                 .placeId(place.getId())
                 .name(place.getName())
-                .score(place.getScore())
+                .GOOD(place.getGOOD())
+                .SOSO(place.getSOSO())
+                .BAD(place.getBAD())
                 .reviewNum(place.getReviewNum())
                 .category(place.getCategory())
                 .isBookmarked(isBookmarked)

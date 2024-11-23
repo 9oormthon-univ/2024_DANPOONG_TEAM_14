@@ -24,7 +24,11 @@ public class Place extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    private Double score;
+    private Integer GOOD;
+
+    private Integer SOSO;
+
+    private Integer BAD;
 
     private Integer reviewNum;
 
@@ -44,8 +48,10 @@ public class Place extends BaseEntity {
     public static Place toPlace(SearchPlaceRequestDTO dto) {
         return Place.builder()
                 .name(dto.getPlcaeName())
-                .score(0.0)
                 .reviewNum(0)
+                .GOOD(0)
+                .SOSO(0)
+                .BAD(0)
                 .category(dto.getCategory())
                 .build();
     }
