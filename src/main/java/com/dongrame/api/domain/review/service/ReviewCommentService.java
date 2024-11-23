@@ -4,6 +4,7 @@ import com.dongrame.api.domain.review.dao.CommentLikeRepository;
 import com.dongrame.api.domain.review.dao.ReviewCommentRepository;
 import com.dongrame.api.domain.review.dao.ReviewRepository;
 import com.dongrame.api.domain.review.dto.GetReviewCommentResponseDTO;
+import com.dongrame.api.domain.review.dto.PatchCommentRequestDTO;
 import com.dongrame.api.domain.review.dto.PostCommentRequestDTO;
 import com.dongrame.api.domain.review.dto.UserInfoDTO;
 import com.dongrame.api.domain.review.entity.CommentLike;
@@ -39,6 +40,16 @@ public class ReviewCommentService {
                 .review(saveReview)
                 .build();
         return reviewCommentRepository.save(newReviewComment);
+    }
+
+    @Transactional
+    public void updateReviewComment(PatchCommentRequestDTO request) {
+        ReviewComment savedReviewComment=reviewCommentRepository.findById(request.getCommentId()).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
+        if(!savedReviewComment.getUser().equals(userService.getCurrentUser())){
+            throw new RuntimeException("권한이 없습니다");
+        }
+        savedReviewComment.setContent(request.getComment());
+        reviewCommentRepository.save(savedReviewComment);
     }
 
     @Transactional

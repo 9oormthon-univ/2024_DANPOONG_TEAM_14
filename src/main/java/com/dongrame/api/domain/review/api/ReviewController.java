@@ -89,6 +89,13 @@ public class ReviewController {
         return ApiResponse.success(reviewCommentService.saveReviewComment(request).getId());
     }
 
+    @Operation(summary = "리뷰 댓글 수정", description = "리뷰 댓글을 수정합니다.")
+    @PatchMapping("/updateComment")
+    public ApiResponse<String> updateComment(@RequestBody @Valid PatchCommentRequestDTO request) {
+        reviewCommentService.updateReviewComment(request);
+        return ApiResponse.success("Comment updated.");
+    }
+
     @Operation(summary = "리뷰 댓글 삭제", description = "리뷰 댓글을 삭제합니다.")
     @DeleteMapping("/deleteComment")
     public ApiResponse<String> deleteComment(@RequestParam(name = "commentId") Long request) {
