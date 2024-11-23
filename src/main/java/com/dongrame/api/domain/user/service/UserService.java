@@ -69,7 +69,7 @@ public class UserService {
     public String updateProfileImage(MultipartFile profileImage) {
         try {
             User currentUser = getCurrentUser();
-            String uploadDir = System.getProperty("user.home") + "/uploads/profileImages";
+            String uploadDir = "/uploads/profileImages";
             Path directory = Paths.get(uploadDir);
             if (!Files.exists(directory)) {
                 Files.createDirectories(directory);
