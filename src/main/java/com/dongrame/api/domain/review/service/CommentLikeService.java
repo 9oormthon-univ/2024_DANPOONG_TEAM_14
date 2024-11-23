@@ -20,8 +20,8 @@ public class CommentLikeService {
     private final UserService userService;
 
     @Transactional
-    public CommentLikeDTO saveCommentLike(Long requset) {
-        ReviewComment savedReviewComment=commentRepository.findById(requset).orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
+    public CommentLikeDTO saveCommentLike(Long request) {
+        ReviewComment savedReviewComment=commentRepository.findById(request).orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
         User currentUser=userService.getCurrentUser();
 
         CommentLike existingCommentLike = commentLikeRepository.findByReviewCommentAndUser(savedReviewComment,currentUser);
@@ -37,14 +37,14 @@ public class CommentLikeService {
         commentRepository.save(savedReviewComment);
         commentLikeRepository.save(savedCommentLike);
         return CommentLikeDTO.builder()
-                .commentId(requset)
+                .commentId(request)
                 .userId(currentUser.getId())
                 .build();
     }
 
     @Transactional
-    public void deleteCommentLike(Long requset) {
-        ReviewComment savedReviewComment=commentRepository.findById(requset).orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
+    public void deleteCommentLike(Long request) {
+        ReviewComment savedReviewComment=commentRepository.findById(request).orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
         User currentUser=userService.getCurrentUser();
 
         CommentLike existingCommentLike = commentLikeRepository.findByReviewCommentAndUser(savedReviewComment,currentUser);

@@ -29,8 +29,8 @@ public class Review {
     @Column(nullable = false)
     private String content;
 
-    @Column(columnDefinition = "FLOAT default 0")
-    private Float score;
+    @Enumerated(EnumType.STRING)
+    private Score score;
 
     @Column(columnDefinition = "integer default 0")
     private Integer likeNum;

@@ -12,6 +12,7 @@ import com.dongrame.api.domain.review.dto.PostReviewRequestDTO;
 import com.dongrame.api.domain.review.entity.Review;
 import com.dongrame.api.domain.review.entity.ReviewImag;
 import com.dongrame.api.domain.review.entity.ReviewLike;
+import com.dongrame.api.domain.review.entity.Score;
 import com.dongrame.api.domain.user.entity.User;
 import com.dongrame.api.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +52,16 @@ public class ReviewService {
                 .place(place)
                 .user(currentUser)
                 .build();
-        place.setScore((place.getScore() * place.getReviewNum()+ request.getScore())/(place.getReviewNum()+1));
+
+        if(request.getScore()== Score.GOOD){
+            place.setGOOD(place.getGOOD()+1);
+        }
+        else if(request.getScore()== Score.SOSO){
+            place.setSOSO(place.getSOSO()+1);
+        }
+        else if(request.getScore()== Score.BAD){
+            place.setBAD(place.getBAD()+1);
+        }
         place.setReviewNum(place.getReviewNum()+1);
         placeRepository.save(place);
         reviewRepository.save(newReview);
@@ -63,12 +73,12 @@ public class ReviewService {
     }
 
     @Transactional
-    public GetDetailReviewResponseDTO getDetailReview(Long reviewid) {
-        Review savedReview=reviewRepository.findById(reviewid).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
+    public GetDetailReviewResponseDTO getDetailReview(Long reviewId) {
+        Review savedReview=reviewRepository.findById(reviewId).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
 
         return GetDetailReviewResponseDTO.builder()
                 .review(convertToDTO(savedReview))
-                .comments(reviewCommentService.getReviewComment(reviewid))
+                .comments(reviewCommentService.getReviewComment(reviewId))
                 .build();
     }
 
@@ -111,7 +121,7 @@ public class ReviewService {
                 .placeName(review.getPlace().getName())
                 .title(review.getTitle())
                 .content(review.getContent())
-                .score(review.getScore())
+                .score(review.getScore().getScore())
                 .likeNum(review.getLikeNum())
                 .liked(liked)
                 .imageUrl(imageUrl)
@@ -125,11 +135,30 @@ public class ReviewService {
         if(!saveReview.getUser().equals(userService.getCurrentUser())){
             throw new RuntimeException("권한이 없습니다");
         }
+        Place place=saveReview.getPlace();
+        if(saveReview.getScore()==Score.GOOD){
+            place.setGOOD(place.getGOOD()-1);
+        }
+        else if(saveReview.getScore()== Score.SOSO){
+            place.setSOSO(place.getSOSO()-1);
+        }
+        else if(saveReview.getScore()== Score.BAD){
+            place.setBAD(place.getBAD()-1);
+        }
+
+        if(request.getScore()== Score.GOOD){
+            place.setGOOD(place.getGOOD()+1);
+        }
+        else if(request.getScore()== Score.SOSO){
+            place.setSOSO(place.getSOSO()+1);
+        }
+        else if(request.getScore()== Score.BAD){
+            place.setBAD(place.getBAD()+1);
+        }
+        placeRepository.save(place);
 
         saveReview.setTitle(request.getTitle());
-
         saveReview.setContent(request.getContent());
-
         saveReview.setScore(request.getScore());
 
         reviewImagService.deleteReviewImages(request.getReviewId());
@@ -146,6 +175,18 @@ public class ReviewService {
         if(!delReview.getUser().equals(userService.getCurrentUser())){
             throw new RuntimeException("권한이 없습니다");
         }
+        Place place=delReview.getPlace();
+        if(delReview.getScore()==Score.GOOD){
+            place.setGOOD(place.getGOOD()-1);
+        }
+        else if(delReview.getScore()== Score.SOSO){
+            place.setSOSO(place.getSOSO()-1);
+        }
+        else if(delReview.getScore()== Score.BAD){
+            place.setBAD(place.getBAD()-1);
+        }
+        place.setReviewNum(place.getReviewNum()-1);
+        placeRepository.save(place);
         reviewImagService.deleteReviewImages(reviewId);
         reviewRepository.delete(delReview);
     }

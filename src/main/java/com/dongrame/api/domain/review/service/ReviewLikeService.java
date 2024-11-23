@@ -20,8 +20,8 @@ public class ReviewLikeService {
     private final UserService userService;
 
     @Transactional
-    public LikeDTO saveLike(Long requset) {
-        Review savedReview=reviewRepository.findById(requset).orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
+    public LikeDTO saveLike(Long request) {
+        Review savedReview=reviewRepository.findById(request).orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
         User currentUser=userService.getCurrentUser();
 
         ReviewLike existingReviewLike = reviewLikeRepository.findByReviewAndUser(savedReview,currentUser);
@@ -37,14 +37,14 @@ public class ReviewLikeService {
         savedReview.setLikeNum(savedReview.getLikeNum()+1);
         reviewRepository.save(savedReview);
         return LikeDTO.builder()
-                .reviewId(requset)
+                .reviewId(request)
                 .userId(currentUser.getId())
                 .build();
     }
 
     @Transactional
-    public void deleteLike(Long requset) {
-        Review savedReview=reviewRepository.findById(requset).orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
+    public void deleteLike(Long request) {
+        Review savedReview=reviewRepository.findById(request).orElseThrow(() -> new RuntimeException("찾을 수 없습니다"));
         User currentUser=userService.getCurrentUser();
 
         ReviewLike existingReviewLike = reviewLikeRepository.findByReviewAndUser(savedReview,currentUser);
