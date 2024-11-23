@@ -131,9 +131,7 @@ public class ReviewService {
 
         return GetReviewResponseDTO.builder()
                 .reviewId(review.getId())
-                .userName(review.getUser().getNickname())
-                .userType(review.getUser().getUserType())
-                .ProfileImageUrl(review.getUser().getProfileImage())
+                .userInfo(UserInfoDTO.toUserInfoDTO(review.getUser()))
                 .placeName(review.getPlace().getName())
                 .title(review.getTitle())
                 .content(review.getContent())

@@ -5,6 +5,7 @@ import com.dongrame.api.domain.review.dao.ReviewCommentRepository;
 import com.dongrame.api.domain.review.dao.ReviewRepository;
 import com.dongrame.api.domain.review.dto.GetReviewCommentResponseDTO;
 import com.dongrame.api.domain.review.dto.PostCommentRequestDTO;
+import com.dongrame.api.domain.review.dto.UserInfoDTO;
 import com.dongrame.api.domain.review.entity.CommentLike;
 import com.dongrame.api.domain.review.entity.Review;
 import com.dongrame.api.domain.review.entity.ReviewComment;
@@ -66,9 +67,7 @@ public class ReviewCommentService {
 
             GetReviewCommentResponseDTO addComment=GetReviewCommentResponseDTO.builder()
                     .commentId(reviewComment.getId())
-                    .userName(reviewComment.getUser().getNickname())
-                    .userType(reviewComment.getUser().getUserType())
-                    .ProfileImageUrl(reviewComment.getUser().getProfileImage())
+                    .userInfo(UserInfoDTO.toUserInfoDTO(reviewComment.getUser()))
                     .content(reviewComment.getContent())
                     .likeNum(reviewComment.getLikeNum())
                     .liked(liked)
