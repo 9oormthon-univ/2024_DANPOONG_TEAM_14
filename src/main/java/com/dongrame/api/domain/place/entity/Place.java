@@ -52,6 +52,7 @@ public class Place extends BaseEntity {
                 .GOOD(0)
                 .SOSO(0)
                 .BAD(0)
+                .category(dto.getCategory())
                 .build();
     }
 
