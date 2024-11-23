@@ -5,10 +5,7 @@ import com.dongrame.api.domain.place.entity.Place;
 import com.dongrame.api.domain.review.dao.ReviewImagRepository;
 import com.dongrame.api.domain.review.dao.ReviewLikeRepository;
 import com.dongrame.api.domain.review.dao.ReviewRepository;
-import com.dongrame.api.domain.review.dto.GetDetailReviewResponseDTO;
-import com.dongrame.api.domain.review.dto.GetReviewResponseDTO;
-import com.dongrame.api.domain.review.dto.PatchReviewRequestDTO;
-import com.dongrame.api.domain.review.dto.PostReviewRequestDTO;
+import com.dongrame.api.domain.review.dto.*;
 import com.dongrame.api.domain.review.entity.Review;
 import com.dongrame.api.domain.review.entity.ReviewImag;
 import com.dongrame.api.domain.review.entity.ReviewLike;
@@ -81,13 +78,21 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<GetReviewResponseDTO> getPlaceReviews(Long placeId) {
+    public GetPlaceReviewResponseDTO getPlaceReviews(Long placeId) {
+        Place place = placeRepository.findById(placeId).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
         List<Review> reviewPage=reviewRepository.findByPlaceId(placeId);
         List<GetReviewResponseDTO> DTOs = new ArrayList<>();
         for (Review review : reviewPage) {
             DTOs.add(convertToDTO(review));
         }
-        return DTOs;
+        return GetPlaceReviewResponseDTO.builder()
+                .placeName(place.getName())
+                .reviewNum(place.getReviewNum())
+                .GOOD(place.getGOOD())
+                .SOSO(place.getSOSO())
+                .BAD(place.getBAD())
+                .reviews(DTOs)
+                .build();
     }
 
     @Transactional
@@ -126,12 +131,13 @@ public class ReviewService {
 
         return GetReviewResponseDTO.builder()
                 .reviewId(review.getId())
-                .userId(review.getUser().getId())
+                .userInfo(UserInfoDTO.toUserInfoDTO(review.getUser()))
                 .placeName(review.getPlace().getName())
                 .title(review.getTitle())
                 .content(review.getContent())
-                .score(review.getScore().getScore())
+                .score(review.getScore())
                 .likeNum(review.getLikeNum())
+                .commentNum(review.getCommentNum())
                 .liked(liked)
                 .imageUrl(imageUrl)
                 .build();

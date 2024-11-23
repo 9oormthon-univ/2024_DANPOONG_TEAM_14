@@ -11,6 +11,7 @@ import com.dongrame.api.domain.place.dto.SearchPlaceResponseDTO;
 import com.dongrame.api.domain.place.entity.Location;
 import com.dongrame.api.domain.place.entity.Place;
 import com.dongrame.api.domain.place.entity.Search;
+import com.dongrame.api.domain.review.entity.Score;
 import com.dongrame.api.domain.user.entity.User;
 import com.dongrame.api.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -77,7 +78,22 @@ public class PlaceService {
                 .orElseThrow(() -> new RuntimeException("장소를 찾을 수 없습니다"));
         User currentUser = userService.getCurrentUser();
         boolean isBookmarked = bookmarkRepository.findByUserAndPlace(currentUser, place).isPresent();
-        return PlaceInfoResponseDTO.toInfoResponseDTO(place, isBookmarked);
+        Integer GOOD = place.getGOOD();
+        Integer SOSO = place.getSOSO();
+        Integer BAD = place.getBAD();
+
+        Integer maxScore = GOOD; // 초기값을 GOOD으로 설정
+        Score maxCategory = Score.GOOD; // 초기 우선 순위
+
+        if (SOSO > maxScore) {
+            maxScore = SOSO;
+            maxCategory = Score.SOSO;
+        }
+        if (BAD > maxScore) {
+            maxCategory = Score.BAD;
+        }
+
+        return PlaceInfoResponseDTO.toInfoResponseDTO(place, isBookmarked,maxCategory);
     }
 
     public LocationResponseDTO getLocation(Long placeId) {

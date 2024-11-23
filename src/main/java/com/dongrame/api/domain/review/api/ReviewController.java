@@ -43,15 +43,13 @@ public class ReviewController {
 
     @Operation(summary = "가게 리뷰 리스트 조회", description = "가게 리뷰 리스트를 조회합니다.")
     @GetMapping("/getPlaceReviews")
-    public ApiResponse<List<GetReviewResponseDTO>> getPlaceReviews(
-            @RequestPart(value = "placeId") Long placeId
-    ) {
+    public ApiResponse<GetPlaceReviewResponseDTO> getPlaceReviews(@RequestParam(value = "placeId") Long placeId) {
         return ApiResponse.success(reviewService.getPlaceReviews(placeId));
     }
 
     @Operation(summary = "유저 리뷰 리스트 조회", description = "유저 리뷰 리스트를 조회합니다.")
     @GetMapping("/getUserReviews")
-    public ApiResponse<List<GetReviewResponseDTO>> getUserReviews(@RequestPart(value = "userId") Long userId) {
+    public ApiResponse<List<GetReviewResponseDTO>> getUserReviews(@RequestParam(value = "userId") Long userId) {
         return ApiResponse.success(reviewService.getUserReviews(userId));
     }
 
