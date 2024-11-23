@@ -67,7 +67,7 @@ url:
 
 cors:
   allowed-origins:
-    - *
+    - "*"
   allowed-methods: "GET, POST, PUT, DELETE, OPTIONS"
   allowed-headers: "Authorization, Cache-Control, Content-Type"
   allow-credentials: true
