@@ -7,6 +7,8 @@ import com.dongrame.api.domain.review.service.CommentLikeService;
 import com.dongrame.api.domain.review.service.ReviewCommentService;
 import com.dongrame.api.domain.review.service.ReviewLikeService;
 import com.dongrame.api.domain.review.service.ReviewService;
+import com.dongrame.api.domain.user.entity.User;
+import com.dongrame.api.domain.user.service.UserService;
 import com.dongrame.api.global.util.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +29,7 @@ public class ReviewController {
     private final ReviewCommentService reviewCommentService;
     private final ReviewLikeService reviewLikeService;
     private final CommentLikeService commentLikeService;
+    private final UserService userService;
 
     @Operation(summary = "리뷰 작성", description = "리뷰를 작성합니다.<br>" +
             "- GOOD : 편했어요<br>" +
@@ -79,7 +82,8 @@ public class ReviewController {
     @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다.")
     @DeleteMapping("/deleteReview")
     public ApiResponse<String> deleteReview(@RequestParam(name = "reviewId") Long request) {
-        reviewService.deleteReview(request);
+        User user=reviewService.deleteReview(request);
+        userService.updateLevel(user);
         return ApiResponse.success("Review deleted.");
     }
 

@@ -37,9 +37,9 @@ public class ReviewService {
 
 
     @Transactional
-    public Review saveReview(PostReviewRequestDTO request,List<MultipartFile> images) {
+    public Review saveReview(PostReviewRequestDTO request, List<MultipartFile> images) {
         Place place = placeRepository.findById(request.getPlaceId()).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
-        User currentUser=userService.getCurrentUser();
+        User currentUser = userService.getCurrentUser();
         Review newReview = Review.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
@@ -64,6 +64,7 @@ public class ReviewService {
             validateImages(images);
             reviewImagService.saveReviewImag(newReview.getId(),images);
         }
+        currentUser.updateLevel();
         return newReview;
     }
 
@@ -185,8 +186,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(Long reviewId) {
+    public User deleteReview(Long reviewId) {
         Review delReview=reviewRepository.findById(reviewId).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
+
         if(!delReview.getUser().equals(userService.getCurrentUser())){
             throw new RuntimeException("권한이 없습니다");
         }
@@ -201,10 +203,13 @@ public class ReviewService {
             place.setBAD(place.getBAD()-1);
         }
         place.setReviewNum(place.getReviewNum()-1);
+
         placeRepository.save(place);
         reviewImagService.deleteReviewImages(reviewId);
         reviewRepository.delete(delReview);
+        return delReview.getUser();
     }
+
 
     // 이미지 리스트의 유효성을 검사하는 메소드
     private void validateImages(List<MultipartFile> images) {

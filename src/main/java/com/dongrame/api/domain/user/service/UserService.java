@@ -49,6 +49,7 @@ public class UserService {
                 .nickname(nickname)
                 .profileImage(profileImage)
                 .email(email)
+                .level(1)
                 .build();
 
         return userRepository.save(newUser).getId();
@@ -57,10 +58,8 @@ public class UserService {
     @Transactional
     public void activeState(String kakaoId, String nickname, String profileImage, String email) {
         Optional<User> existingUser = userRepository.findByKakaoIdAndActiveFalse(kakaoId);
-        System.out.println(1231231241);
 
         if (existingUser.isPresent() && !existingUser.get().isActive()) {
-            System.out.println(1231231241);
             User user = existingUser.get();
             user.setActive(true);
             user.setNickname(nickname);
@@ -124,6 +123,11 @@ public class UserService {
         User user = getCurrentUser();
         user.update(dto);
         return user.getId();
+    }
+
+    @Transactional
+    public void updateLevel(User user){
+        user.updateLevel();
     }
 
     @Transactional
@@ -226,4 +230,3 @@ public class UserService {
         }
     }
 }
-

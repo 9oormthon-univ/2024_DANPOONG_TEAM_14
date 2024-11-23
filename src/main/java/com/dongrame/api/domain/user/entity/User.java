@@ -43,6 +43,9 @@ public class User {
     private UserType userType;
 
     @Column(nullable = false)
+    private int level;
+
+    @Column(nullable = false)
     private boolean active = true;
 
     @Column(nullable = false)
@@ -76,5 +79,22 @@ public class User {
     public void updateProfileImage(String newProfileImage) {
         this.profileImage = newProfileImage;
         this.isProfileImageUpdated = true;
+    }
+
+    public void updateLevel() {
+        int reviewCount = reviews.size();
+        int photoReviewCount = (int) reviews.stream().filter(Review::hasPhoto).count();
+
+        if (reviewCount >= 20 || photoReviewCount >= 12) {
+            this.level = 5;
+        } else if (reviewCount >= 15 || photoReviewCount >= 9) {
+            this.level = 4;
+        } else if (reviewCount >= 10 || photoReviewCount >= 6) {
+            this.level = 3;
+        } else if (reviewCount >= 5 || photoReviewCount >= 3) {
+            this.level = 2;
+        } else {
+            this.level = 1;
+        }
     }
 }

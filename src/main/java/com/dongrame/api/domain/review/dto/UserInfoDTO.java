@@ -18,6 +18,8 @@ public class UserInfoDTO {
 
     private UserType userType;
 
+    private int level;
+
     private String ProfileImageUrl;
 
     public static UserInfoDTO toUserInfoDTO(User user) {
@@ -25,6 +27,7 @@ public class UserInfoDTO {
                 .userId(user.getId())
                 .userName(user.getNickname())
                 .userType(user.getUserType())
+                .level(user.getLevel())
                 .ProfileImageUrl(user.getProfileImage())
                 .build();
     }
