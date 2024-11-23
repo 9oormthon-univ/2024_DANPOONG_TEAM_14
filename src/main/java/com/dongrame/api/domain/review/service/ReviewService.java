@@ -15,8 +15,6 @@ import com.dongrame.api.domain.review.entity.ReviewLike;
 import com.dongrame.api.domain.user.entity.User;
 import com.dongrame.api.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,8 +71,8 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<GetReviewResponseDTO> getPlaceReviews(Long placeId,int page) {
-        Page<Review> reviewPage=reviewRepository.findByPlaceId(placeId, PageRequest.of(page,10));
+    public List<GetReviewResponseDTO> getPlaceReviews(Long placeId) {
+        List<Review> reviewPage=reviewRepository.findByPlaceId(placeId);
         List<GetReviewResponseDTO> DTOs = new ArrayList<>();
         for (Review review : reviewPage) {
             DTOs.add(convertToDTO(review));
@@ -83,8 +81,19 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<GetReviewResponseDTO> getUserReviews(Long userId,int page) {
-        Page<Review> reviewPage=reviewRepository.findByUserId(userId, PageRequest.of(page,10));
+    public List<GetReviewResponseDTO> getUserReviews(Long userId) {
+        List<Review> reviewPage=reviewRepository.findByUserId(userId);
+        List<GetReviewResponseDTO> DTOs = new ArrayList<>();
+        for (Review review : reviewPage) {
+            DTOs.add(convertToDTO(review));
+        }
+        return DTOs;
+    }
+
+    @Transactional
+    public List<GetReviewResponseDTO> getCurrentUserReviews() {
+        User currentUser = userService.getCurrentUser(); // 현재 사용자 정보 가져오기
+        List<Review> reviewPage=reviewRepository.findByUserId(currentUser.getId());
         List<GetReviewResponseDTO> DTOs = new ArrayList<>();
         for (Review review : reviewPage) {
             DTOs.add(convertToDTO(review));
