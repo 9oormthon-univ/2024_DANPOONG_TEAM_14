@@ -3,7 +3,6 @@ package com.dongrame.api.domain.user.service;
 import com.dongrame.api.domain.user.dao.UserRepository;
 import com.dongrame.api.domain.user.dto.UserResponseDto;
 import com.dongrame.api.domain.user.dto.UserUpdateRequestDto;
-import com.dongrame.api.domain.user.entity.Gender;
 import com.dongrame.api.domain.user.entity.User;
 import com.dongrame.api.domain.user.entity.UserType;
 import com.dongrame.api.global.auth.service.RefreshTokenService;
@@ -12,7 +11,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 @Service
@@ -32,9 +36,7 @@ public class UserService {
             user.setActive(true);
             user.setNickname(nickname);
             user.setProfileImage(profileImage);
-            user.setEmail(email);
-            user.setAge(0);
-            user.setGender(Gender.NO);
+            user.setEmail(email);;
             return userRepository.save(user).getId();
         }
 
@@ -44,8 +46,6 @@ public class UserService {
                 .nickname(nickname)
                 .profileImage(profileImage)
                 .email(email)
-                .age(0)
-                .gender(Gender.NO)
                 .build();
 
         return userRepository.save(newUser).getId();
@@ -63,6 +63,30 @@ public class UserService {
         User user = getCurrentUser();
         user.update(dto);
         return user.getId();
+    }
+
+    @Transactional
+    public String updateProfileImage(MultipartFile profileImage) {
+        try {
+            User currentUser = getCurrentUser();
+            String uploadDir = System.getProperty("user.home") + "/uploads/profileImages";
+            Path directory = Paths.get(uploadDir);
+            if (!Files.exists(directory)) {
+                Files.createDirectories(directory);
+            }
+            String originalFilename = profileImage.getOriginalFilename();
+            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String newFilename = "profile_" + currentUser.getKakaoId() + "_" + System.currentTimeMillis() + extension;
+            Path filePath = directory.resolve(newFilename);
+            profileImage.transferTo(filePath.toFile());
+
+            String profileImagePath = "/uploads/profileImages/" + newFilename;
+            currentUser.updateProfileImage(profileImagePath);
+
+            return profileImagePath;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save profile image", e);
+        }
     }
 
     @Transactional

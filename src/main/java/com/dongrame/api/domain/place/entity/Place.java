@@ -40,9 +40,6 @@ public class Place extends BaseEntity {
     private Location location;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
-    private List<Menu> menus;
-
-    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
     private List<Review> reviews = new ArrayList<>();
 
     public static Place toPlace(SearchPlaceRequestDTO dto) {

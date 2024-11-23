@@ -39,16 +39,14 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    private int age;
-
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
     @Column(nullable = false)
     private boolean active = true;
+
+    @Column(nullable = false)
+    private boolean isProfileImageUpdated = false;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Review> reviews = new ArrayList<>();
@@ -73,7 +71,10 @@ public class User {
         this.nickname = dto.getUsername();
         this.email = dto.getEmail();
         this.userType = dto.getUserType();
-        this.age = dto.getAge();
-        this.gender = dto.getGender();
+    }
+
+    public void updateProfileImage(String newProfileImage) {
+        this.profileImage = newProfileImage;
+        this.isProfileImageUpdated = true;
     }
 }

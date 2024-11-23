@@ -1,20 +1,17 @@
 package com.dongrame.api.domain.place.service;
 
 import com.dongrame.api.domain.bookmark.dao.BookmarkRepository;
-import com.dongrame.api.domain.bookmark.entity.Bookmark;
 import com.dongrame.api.domain.place.dao.LocationRepository;
-import com.dongrame.api.domain.place.dao.MenuRepository;
 import com.dongrame.api.domain.place.dao.PlaceRepository;
 import com.dongrame.api.domain.place.dao.SearchRepository;
 import com.dongrame.api.domain.place.dto.LocationResponseDTO;
-import com.dongrame.api.domain.place.dto.MenuResponseDTO;
 import com.dongrame.api.domain.place.dto.PlaceInfoResponseDTO;
 import com.dongrame.api.domain.place.dto.SearchPlaceRequestDTO;
 import com.dongrame.api.domain.place.dto.SearchPlaceResponseDTO;
 import com.dongrame.api.domain.place.entity.Location;
-import com.dongrame.api.domain.place.entity.Menu;
 import com.dongrame.api.domain.place.entity.Place;
 import com.dongrame.api.domain.place.entity.Search;
+import com.dongrame.api.domain.review.entity.Score;
 import com.dongrame.api.domain.user.entity.User;
 import com.dongrame.api.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +26,6 @@ import java.util.Optional;
 public class PlaceService {
 
     private final PlaceRepository placeRepository;
-    private final MenuRepository menuRepository;
     private final LocationRepository locationRepository;
     private final SearchRepository searchRepository;
     private final UserService userService;
@@ -83,15 +78,22 @@ public class PlaceService {
                 .orElseThrow(() -> new RuntimeException("장소를 찾을 수 없습니다"));
         User currentUser = userService.getCurrentUser();
         boolean isBookmarked = bookmarkRepository.findByUserAndPlace(currentUser, place).isPresent();
-        return PlaceInfoResponseDTO.toInfoResponseDTO(place, isBookmarked);
-    }
+        Integer GOOD = place.getGOOD();
+        Integer SOSO = place.getSOSO();
+        Integer BAD = place.getBAD();
 
-    public MenuResponseDTO getMenus(Long placeId) {
-        List<Menu> menus = menuRepository.findByPlaceId(placeId);
-        if(menus.isEmpty()) {
-            return null;
+        Integer maxScore = GOOD; // 초기값을 GOOD으로 설정
+        Score maxCategory = Score.GOOD; // 초기 우선 순위
+
+        if (SOSO > maxScore) {
+            maxScore = SOSO;
+            maxCategory = Score.SOSO;
         }
-        return MenuResponseDTO.toMenuResponseDTO(menus);
+        if (BAD > maxScore) {
+            maxCategory = Score.BAD;
+        }
+
+        return PlaceInfoResponseDTO.toInfoResponseDTO(place, isBookmarked,maxCategory);
     }
 
     public LocationResponseDTO getLocation(Long placeId) {

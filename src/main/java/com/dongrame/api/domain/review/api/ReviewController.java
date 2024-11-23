@@ -33,28 +33,30 @@ public class ReviewController {
             "- SOSO : 조금 불편했어요<br>" +
             "- BAD : 불편했어요<br>")
     @PostMapping(value = "/saveReview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<PostReviewResponseDTO> postReview(
+    public ApiResponse<Long> postReview(
             @RequestPart @Valid PostReviewRequestDTO request,
             @RequestPart(value = "images", required = false) List<MultipartFile> images) {
-        Review newReview=reviewService.saveReview(request,images);
+        Review review = reviewService.saveReview(request,images);
 
-        return ApiResponse.success(PostReviewResponseDTO.toReviewResponseDTO(newReview));
+        return ApiResponse.success(review.getId());
     }
 
     @Operation(summary = "가게 리뷰 리스트 조회", description = "가게 리뷰 리스트를 조회합니다.")
-    @GetMapping("/getPlaceReviews/{placeId}")
-    public ApiResponse<List<GetReviewResponseDTO>> getPlaceReviews(
-            @PathVariable Long placeId,
-            @RequestParam(name ="page",defaultValue = "0") int page) {
-        return ApiResponse.success(reviewService.getPlaceReviews(placeId,page));
+    @GetMapping("/getPlaceReviews")
+    public ApiResponse<GetPlaceReviewResponseDTO> getPlaceReviews(@RequestParam(value = "placeId") Long placeId) {
+        return ApiResponse.success(reviewService.getPlaceReviews(placeId));
     }
 
     @Operation(summary = "유저 리뷰 리스트 조회", description = "유저 리뷰 리스트를 조회합니다.")
-    @GetMapping("/getUserReviews/{userId}")
-    public ApiResponse<List<GetReviewResponseDTO>> getUserReviews(
-            @PathVariable Long userId,
-            @RequestParam(name ="page",defaultValue = "0") int page) {
-        return ApiResponse.success(reviewService.getUserReviews(userId,page));
+    @GetMapping("/getUserReviews")
+    public ApiResponse<List<GetReviewResponseDTO>> getUserReviews(@RequestParam(value = "userId") Long userId) {
+        return ApiResponse.success(reviewService.getUserReviews(userId));
+    }
+
+    @Operation(summary = "내 리뷰 리스트 조회", description = "내 리뷰 리스트를 조회합니다.")
+    @GetMapping("/getMYReviews")
+    public ApiResponse<List<GetReviewResponseDTO>> getMYReviews() {
+        return ApiResponse.success(reviewService.getMyReviews());
     }
 
     @Operation(summary = "리뷰 상세 조회", description = "리뷰를 상세 조회합니다.")
@@ -85,6 +87,13 @@ public class ReviewController {
     @PostMapping("/saveComment")
     public ApiResponse<Long> postComment(@RequestBody @Valid PostCommentRequestDTO request) {
         return ApiResponse.success(reviewCommentService.saveReviewComment(request).getId());
+    }
+
+    @Operation(summary = "리뷰 댓글 수정", description = "리뷰 댓글을 수정합니다.")
+    @PatchMapping("/updateComment")
+    public ApiResponse<String> updateComment(@RequestBody @Valid PatchCommentRequestDTO request) {
+        reviewCommentService.updateReviewComment(request);
+        return ApiResponse.success("Comment updated.");
     }
 
     @Operation(summary = "리뷰 댓글 삭제", description = "리뷰 댓글을 삭제합니다.")

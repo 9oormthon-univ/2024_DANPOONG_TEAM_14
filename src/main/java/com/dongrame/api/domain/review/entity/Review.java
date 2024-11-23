@@ -35,6 +35,9 @@ public class Review {
     @Column(columnDefinition = "integer default 0")
     private Integer likeNum;
 
+    @Column(columnDefinition = "integer default 0")
+    private Integer commentNum;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "placeId")
     private Place place;

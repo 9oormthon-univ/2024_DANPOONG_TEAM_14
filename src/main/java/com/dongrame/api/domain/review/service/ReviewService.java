@@ -5,10 +5,7 @@ import com.dongrame.api.domain.place.entity.Place;
 import com.dongrame.api.domain.review.dao.ReviewImagRepository;
 import com.dongrame.api.domain.review.dao.ReviewLikeRepository;
 import com.dongrame.api.domain.review.dao.ReviewRepository;
-import com.dongrame.api.domain.review.dto.GetDetailReviewResponseDTO;
-import com.dongrame.api.domain.review.dto.GetReviewResponseDTO;
-import com.dongrame.api.domain.review.dto.PatchReviewRequestDTO;
-import com.dongrame.api.domain.review.dto.PostReviewRequestDTO;
+import com.dongrame.api.domain.review.dto.*;
 import com.dongrame.api.domain.review.entity.Review;
 import com.dongrame.api.domain.review.entity.ReviewImag;
 import com.dongrame.api.domain.review.entity.ReviewLike;
@@ -16,8 +13,6 @@ import com.dongrame.api.domain.review.entity.Score;
 import com.dongrame.api.domain.user.entity.User;
 import com.dongrame.api.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -83,8 +78,26 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<GetReviewResponseDTO> getPlaceReviews(Long placeId,int page) {
-        Page<Review> reviewPage=reviewRepository.findByPlaceId(placeId, PageRequest.of(page,10));
+    public GetPlaceReviewResponseDTO getPlaceReviews(Long placeId) {
+        Place place = placeRepository.findById(placeId).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
+        List<Review> reviewPage=reviewRepository.findByPlaceId(placeId);
+        List<GetReviewResponseDTO> DTOs = new ArrayList<>();
+        for (Review review : reviewPage) {
+            DTOs.add(convertToDTO(review));
+        }
+        return GetPlaceReviewResponseDTO.builder()
+                .placeName(place.getName())
+                .reviewNum(place.getReviewNum())
+                .GOOD(place.getGOOD())
+                .SOSO(place.getSOSO())
+                .BAD(place.getBAD())
+                .reviews(DTOs)
+                .build();
+    }
+
+    @Transactional
+    public List<GetReviewResponseDTO> getUserReviews(Long userId) {
+        List<Review> reviewPage=reviewRepository.findByUserId(userId);
         List<GetReviewResponseDTO> DTOs = new ArrayList<>();
         for (Review review : reviewPage) {
             DTOs.add(convertToDTO(review));
@@ -93,8 +106,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<GetReviewResponseDTO> getUserReviews(Long userId,int page) {
-        Page<Review> reviewPage=reviewRepository.findByUserId(userId, PageRequest.of(page,10));
+    public List<GetReviewResponseDTO> getMyReviews() {
+        User currentUser = userService.getCurrentUser(); // 현재 사용자 정보 가져오기
+        List<Review> reviewPage=reviewRepository.findByUserId(currentUser.getId());
         List<GetReviewResponseDTO> DTOs = new ArrayList<>();
         for (Review review : reviewPage) {
             DTOs.add(convertToDTO(review));
@@ -117,12 +131,13 @@ public class ReviewService {
 
         return GetReviewResponseDTO.builder()
                 .reviewId(review.getId())
-                .userId(review.getUser().getId())
+                .userInfo(UserInfoDTO.toUserInfoDTO(review.getUser()))
                 .placeName(review.getPlace().getName())
                 .title(review.getTitle())
                 .content(review.getContent())
-                .score(review.getScore().getScore())
+                .score(review.getScore())
                 .likeNum(review.getLikeNum())
+                .commentNum(review.getCommentNum())
                 .liked(liked)
                 .imageUrl(imageUrl)
                 .build();

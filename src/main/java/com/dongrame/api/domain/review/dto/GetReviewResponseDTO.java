@@ -1,5 +1,6 @@
 package com.dongrame.api.domain.review.dto;
 
+import com.dongrame.api.domain.review.entity.Score;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,11 +19,13 @@ public class GetReviewResponseDTO {
 
     private String content;
 
-    private String score;
+    private Score score;
 
     private Integer likeNum;
 
-    private Long userId;
+    private Integer commentNum;
+
+    private UserInfoDTO userInfo;
 
     private String placeName;
 

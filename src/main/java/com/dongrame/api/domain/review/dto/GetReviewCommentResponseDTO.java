@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class GetReviewCommentResponseDTO {
     private Long commentId;
 
-    private Long userId;
+    private UserInfoDTO userInfo;
 
     private Integer likeNum;
 
