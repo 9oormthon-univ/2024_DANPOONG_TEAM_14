@@ -39,11 +39,6 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    private int age;
-
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
@@ -73,7 +68,5 @@ public class User {
         this.nickname = dto.getUsername();
         this.email = dto.getEmail();
         this.userType = dto.getUserType();
-        this.age = dto.getAge();
-        this.gender = dto.getGender();
     }
 }

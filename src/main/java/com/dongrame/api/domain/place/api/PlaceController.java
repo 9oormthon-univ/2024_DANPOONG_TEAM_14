@@ -2,7 +2,6 @@ package com.dongrame.api.domain.place.api;
 
 import com.dongrame.api.domain.place.dto.PlaceInfoResponseDTO;
 import com.dongrame.api.domain.place.dto.LocationResponseDTO;
-import com.dongrame.api.domain.place.dto.MenuResponseDTO;
 import com.dongrame.api.domain.place.dto.SearchPlaceRequestDTO;
 import com.dongrame.api.domain.place.dto.SearchPlaceResponseDTO;
 import com.dongrame.api.domain.place.service.PlaceService;
@@ -50,15 +49,6 @@ public class PlaceController {
     ) {
         PlaceInfoResponseDTO placeInfoDto = placeService.getPlaceInfo(placeId);
         return ApiResponse.success(placeInfoDto);
-    }
-
-    @Operation(summary = "장소 메뉴 정보 조회", description = "메뉴 정보를 조회합니다.")
-    @GetMapping("/menu")
-    public ApiResponse<MenuResponseDTO> getPlaceMenu(
-            @RequestParam(name = "placeId") Long placeId
-    ) {
-        MenuResponseDTO menuResponseDTO = placeService.getMenus(placeId);
-        return  ApiResponse.success(menuResponseDTO);
     }
 
     @Operation(summary = "장소 위치 정보 조회", description = "장소 위치 정보를 조회합니다.")
