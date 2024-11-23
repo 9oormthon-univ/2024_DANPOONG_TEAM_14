@@ -66,7 +66,7 @@ public class ReviewCommentService {
 
     @Transactional
     public List<GetReviewCommentResponseDTO> getReviewComment(Long reviewId) {
-        List<ReviewComment> reviewComments=reviewCommentRepository.findByReviewId(reviewId);
+        List<ReviewComment> reviewComments=reviewCommentRepository.findByReviewIdAndUserActiveTrue(reviewId);
 
         List<GetReviewCommentResponseDTO> savedReviewComments= new ArrayList<>();
         for(ReviewComment reviewComment:reviewComments){
