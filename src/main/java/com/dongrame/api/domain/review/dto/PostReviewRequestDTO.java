@@ -8,6 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PostReviewRequestDTO {
+
+    @NotNull
+    private Long placeId;
+
     @NotNull
     private String title;
 
@@ -16,8 +20,4 @@ public class PostReviewRequestDTO {
 
     @NotNull
     private Score score;
-
-    @NotNull
-    private Long placeId;
-
 }

@@ -33,17 +33,19 @@ public class ReviewController {
             "- SOSO : 조금 불편했어요<br>" +
             "- BAD : 불편했어요<br>")
     @PostMapping(value = "/saveReview", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<PostReviewResponseDTO> postReview(
+    public ApiResponse<Long> postReview(
             @RequestPart @Valid PostReviewRequestDTO request,
             @RequestPart(value = "images", required = false) List<MultipartFile> images) {
-        Review newReview=reviewService.saveReview(request,images);
+        Review review = reviewService.saveReview(request,images);
 
-        return ApiResponse.success(PostReviewResponseDTO.toReviewResponseDTO(newReview));
+        return ApiResponse.success(review.getId());
     }
 
     @Operation(summary = "가게 리뷰 리스트 조회", description = "가게 리뷰 리스트를 조회합니다.")
     @GetMapping("/getPlaceReviews")
-    public ApiResponse<List<GetReviewResponseDTO>> getPlaceReviews(@RequestPart(value = "placeId") Long placeId) {
+    public ApiResponse<List<GetReviewResponseDTO>> getPlaceReviews(
+            @RequestPart(value = "placeId") Long placeId
+    ) {
         return ApiResponse.success(reviewService.getPlaceReviews(placeId));
     }
 

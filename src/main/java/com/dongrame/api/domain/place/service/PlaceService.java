@@ -86,14 +86,6 @@ public class PlaceService {
         return PlaceInfoResponseDTO.toInfoResponseDTO(place, isBookmarked);
     }
 
-    public MenuResponseDTO getMenus(Long placeId) {
-        List<Menu> menus = menuRepository.findByPlaceId(placeId);
-        if(menus.isEmpty()) {
-            return null;
-        }
-        return MenuResponseDTO.toMenuResponseDTO(menus);
-    }
-
     public LocationResponseDTO getLocation(Long placeId) {
         Location location = locationRepository.findById(placeId)
                 .orElseThrow(() -> new RuntimeException("장소를 찾을 수 없습니다"));
