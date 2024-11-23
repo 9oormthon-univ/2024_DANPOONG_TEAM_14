@@ -1,6 +1,7 @@
 package com.dongrame.api.domain.place.dto;
 
 import com.dongrame.api.domain.place.entity.Place;
+import com.dongrame.api.domain.review.entity.Score;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,11 +17,7 @@ public class PlaceInfoResponseDTO {
 
     private String name;
 
-    private Integer GOOD;
-
-    private Integer SOSO;
-
-    private Integer BAD;
+    private Score score;
 
     private Integer reviewNum;
 
@@ -28,13 +25,11 @@ public class PlaceInfoResponseDTO {
 
     private boolean isBookmarked;
 
-    public static PlaceInfoResponseDTO toInfoResponseDTO(Place place, boolean isBookmarked) {
+    public static PlaceInfoResponseDTO toInfoResponseDTO(Place place, boolean isBookmarked, Score score) {
         return PlaceInfoResponseDTO.builder()
                 .placeId(place.getId())
                 .name(place.getName())
-                .GOOD(place.getGOOD())
-                .SOSO(place.getSOSO())
-                .BAD(place.getBAD())
+                .score(score)
                 .reviewNum(place.getReviewNum())
                 .category(place.getCategory())
                 .isBookmarked(isBookmarked)
