@@ -2,7 +2,10 @@ package com.dongrame.api.domain.user.service;
 
 import com.dongrame.api.domain.user.dao.UserRepository;
 import com.dongrame.api.domain.user.dto.UserResponseDto;
+import com.dongrame.api.domain.user.dto.UserUpdateRequestDto;
+import com.dongrame.api.domain.user.entity.Gender;
 import com.dongrame.api.domain.user.entity.User;
+import com.dongrame.api.domain.user.entity.UserType;
 import com.dongrame.api.global.auth.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +33,8 @@ public class UserService {
             user.setNickname(nickname);
             user.setProfileImage(profileImage);
             user.setEmail(email);
+            user.setAge(0);
+            user.setGender(Gender.NO);
             return userRepository.save(user).getId();
         }
 
@@ -39,15 +44,24 @@ public class UserService {
                 .nickname(nickname)
                 .profileImage(profileImage)
                 .email(email)
+                .age(0)
+                .gender(Gender.NO)
                 .build();
+
         return userRepository.save(newUser).getId();
     }
 
     @Transactional
-    public Long updateUsername(String username) {
-        UserResponseDto userDto = getCurrentLoginUser();
-        User user = findByKakaoId(userDto.getKakaoId());
-        user.setNickname(username);
+    public Long updateUserType(UserType type) {
+        User user = getCurrentUser();
+        user.updateUserType(type);
+        return user.getId();
+    }
+
+    @Transactional
+    public Long updateUser(UserUpdateRequestDto dto) {
+        User user = getCurrentUser();
+        user.update(dto);
         return user.getId();
     }
 
