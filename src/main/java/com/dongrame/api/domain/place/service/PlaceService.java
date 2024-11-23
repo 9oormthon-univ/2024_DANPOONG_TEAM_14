@@ -2,16 +2,13 @@ package com.dongrame.api.domain.place.service;
 
 import com.dongrame.api.domain.bookmark.dao.BookmarkRepository;
 import com.dongrame.api.domain.place.dao.LocationRepository;
-import com.dongrame.api.domain.place.dao.MenuRepository;
 import com.dongrame.api.domain.place.dao.PlaceRepository;
 import com.dongrame.api.domain.place.dao.SearchRepository;
 import com.dongrame.api.domain.place.dto.LocationResponseDTO;
-import com.dongrame.api.domain.place.dto.MenuResponseDTO;
 import com.dongrame.api.domain.place.dto.PlaceInfoResponseDTO;
 import com.dongrame.api.domain.place.dto.SearchPlaceRequestDTO;
 import com.dongrame.api.domain.place.dto.SearchPlaceResponseDTO;
 import com.dongrame.api.domain.place.entity.Location;
-import com.dongrame.api.domain.place.entity.Menu;
 import com.dongrame.api.domain.place.entity.Place;
 import com.dongrame.api.domain.place.entity.Search;
 import com.dongrame.api.domain.review.entity.Score;
@@ -29,7 +26,6 @@ import java.util.List;
 public class PlaceService {
 
     private final PlaceRepository placeRepository;
-    private final MenuRepository menuRepository;
     private final LocationRepository locationRepository;
     private final SearchRepository searchRepository;
     private final UserService userService;
@@ -98,14 +94,6 @@ public class PlaceService {
         }
 
         return PlaceInfoResponseDTO.toInfoResponseDTO(place, isBookmarked,maxCategory);
-    }
-
-    public MenuResponseDTO getMenus(Long placeId) {
-        List<Menu> menus = menuRepository.findByPlaceId(placeId);
-        if(menus.isEmpty()) {
-            return null;
-        }
-        return MenuResponseDTO.toMenuResponseDTO(menus);
     }
 
     public LocationResponseDTO getLocation(Long placeId) {
