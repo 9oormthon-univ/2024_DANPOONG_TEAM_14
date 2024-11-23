@@ -68,6 +68,11 @@ public class UserService {
     }
 
     @Transactional
+    public void updateLevel(User user){
+        user.updateLevel();
+    }
+
+    @Transactional
     public String updateProfileImage(MultipartFile profileImage) {
         try {
             User currentUser = getCurrentUser();

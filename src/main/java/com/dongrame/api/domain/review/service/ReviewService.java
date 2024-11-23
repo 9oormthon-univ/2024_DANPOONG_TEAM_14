@@ -186,8 +186,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(Long reviewId) {
+    public User deleteReview(Long reviewId) {
         Review delReview=reviewRepository.findById(reviewId).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
+
         if(!delReview.getUser().equals(userService.getCurrentUser())){
             throw new RuntimeException("권한이 없습니다");
         }
@@ -202,13 +203,13 @@ public class ReviewService {
             place.setBAD(place.getBAD()-1);
         }
         place.setReviewNum(place.getReviewNum()-1);
-        delReview.setPlace(null);
-        delReview.getUser().getReviews().remove(delReview);
+
         placeRepository.save(place);
         reviewImagService.deleteReviewImages(reviewId);
-        delReview.getUser().updateLevel();
         reviewRepository.delete(delReview);
+        return delReview.getUser();
     }
+
 
     // 이미지 리스트의 유효성을 검사하는 메소드
     private void validateImages(List<MultipartFile> images) {
