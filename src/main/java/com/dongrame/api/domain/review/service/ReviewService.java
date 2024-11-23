@@ -37,9 +37,9 @@ public class ReviewService {
 
 
     @Transactional
-    public Review saveReview(PostReviewRequestDTO request,List<MultipartFile> images) {
+    public Review saveReview(PostReviewRequestDTO request, List<MultipartFile> images) {
         Place place = placeRepository.findById(request.getPlaceId()).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
-        User currentUser=userService.getCurrentUser();
+        User currentUser = userService.getCurrentUser();
         Review newReview = Review.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
@@ -64,6 +64,7 @@ public class ReviewService {
             validateImages(images);
             reviewImagService.saveReviewImag(newReview.getId(),images);
         }
+        currentUser.updateLevel();
         return newReview;
     }
 
@@ -203,6 +204,7 @@ public class ReviewService {
         place.setReviewNum(place.getReviewNum()-1);
         placeRepository.save(place);
         reviewImagService.deleteReviewImages(reviewId);
+        delReview.getUser().updateLevel();
         reviewRepository.delete(delReview);
     }
 

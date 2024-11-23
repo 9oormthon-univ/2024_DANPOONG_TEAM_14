@@ -36,7 +36,8 @@ public class UserService {
             user.setActive(true);
             user.setNickname(nickname);
             user.setProfileImage(profileImage);
-            user.setEmail(email);;
+            user.setLevel(1);
+            user.setEmail(email);
             return userRepository.save(user).getId();
         }
 
@@ -46,6 +47,7 @@ public class UserService {
                 .nickname(nickname)
                 .profileImage(profileImage)
                 .email(email)
+                .level(1)
                 .build();
 
         return userRepository.save(newUser).getId();
@@ -122,4 +124,3 @@ public class UserService {
         }
     }
 }
-
