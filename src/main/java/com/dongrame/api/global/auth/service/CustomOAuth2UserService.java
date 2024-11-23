@@ -53,6 +53,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             if(isFirstLogin) {
                 userService.save(kakaoId, nickname, profileImage, email);
             }
+            else{
+                userService.activeState(kakaoId, nickname, profileImage, email);
+            }
 
             return new DefaultOAuth2User(
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),

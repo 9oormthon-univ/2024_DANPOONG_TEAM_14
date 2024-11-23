@@ -81,7 +81,7 @@ public class ReviewService {
     @Transactional
     public GetPlaceReviewResponseDTO getPlaceReviews(Long placeId) {
         Place place = placeRepository.findById(placeId).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
-        List<Review> reviewPage=reviewRepository.findByPlaceId(placeId);
+        List<Review> reviewPage=reviewRepository.findByPlaceIdAndUserActiveTrue(placeId);
         List<GetReviewResponseDTO> DTOs = new ArrayList<>();
         for (Review review : reviewPage) {
             DTOs.add(convertToDTO(review));
@@ -98,7 +98,7 @@ public class ReviewService {
 
     @Transactional
     public List<GetReviewResponseDTO> getUserReviews(Long userId) {
-        List<Review> reviewPage=reviewRepository.findByUserId(userId);
+        List<Review> reviewPage=reviewRepository.findByUserIdAndUserActiveTrue(userId);
         List<GetReviewResponseDTO> DTOs = new ArrayList<>();
         for (Review review : reviewPage) {
             DTOs.add(convertToDTO(review));
@@ -109,7 +109,7 @@ public class ReviewService {
     @Transactional
     public List<GetReviewResponseDTO> getMyReviews() {
         User currentUser = userService.getCurrentUser(); // 현재 사용자 정보 가져오기
-        List<Review> reviewPage=reviewRepository.findByUserId(currentUser.getId());
+        List<Review> reviewPage=reviewRepository.findByUserIdAndUserActiveTrue(currentUser.getId());
         List<GetReviewResponseDTO> DTOs = new ArrayList<>();
         for (Review review : reviewPage) {
             DTOs.add(convertToDTO(review));
