@@ -202,6 +202,8 @@ public class ReviewService {
             place.setBAD(place.getBAD()-1);
         }
         place.setReviewNum(place.getReviewNum()-1);
+        delReview.setPlace(null);
+        delReview.getUser().getReviews().remove(delReview);
         placeRepository.save(place);
         reviewImagService.deleteReviewImages(reviewId);
         delReview.getUser().updateLevel();
