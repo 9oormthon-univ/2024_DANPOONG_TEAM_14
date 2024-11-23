@@ -61,12 +61,12 @@ public class ReviewService {
     }
 
     @Transactional
-    public GetDetailReviewResponseDTO getDetailReview(Long reviewid) {
-        Review savedReview=reviewRepository.findById(reviewid).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
+    public GetDetailReviewResponseDTO getDetailReview(Long reviewId) {
+        Review savedReview=reviewRepository.findById(reviewId).orElseThrow(()->new RuntimeException("찾을 수 없습니다"));
 
         return GetDetailReviewResponseDTO.builder()
                 .review(convertToDTO(savedReview))
-                .comments(reviewCommentService.getReviewComment(reviewid))
+                .comments(reviewCommentService.getReviewComment(reviewId))
                 .build();
     }
 
@@ -91,7 +91,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<GetReviewResponseDTO> getCurrentUserReviews() {
+    public List<GetReviewResponseDTO> getMyReviews() {
         User currentUser = userService.getCurrentUser(); // 현재 사용자 정보 가져오기
         List<Review> reviewPage=reviewRepository.findByUserId(currentUser.getId());
         List<GetReviewResponseDTO> DTOs = new ArrayList<>();
