@@ -15,6 +15,7 @@ public class UserResponseDto {
     private boolean isProfileImageUpdated;
     private String profileImageUrl;
     private UserType userType;
+    private int level;
     private int reviewNum;
     private int bookmarkNum;
 
@@ -26,6 +27,7 @@ public class UserResponseDto {
                 .isProfileImageUpdated(user.isProfileImageUpdated())
                 .profileImageUrl(user.getProfileImage())
                 .userType(user.getUserType())
+                .level(user.getLevel())
                 .reviewNum(user.getReviews().size())
                 .bookmarkNum(user.getBookmarks().size())
                 .build();

@@ -55,4 +55,8 @@ public class Review {
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     private List<ReviewLike> reviewLikes = new ArrayList<>();
+
+    public boolean hasPhoto() {
+        return !(reviewImags == null || reviewImags.isEmpty());
+    }
 }

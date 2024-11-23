@@ -1,5 +1,12 @@
 package com.dongrame.api.domain.user.service;
 
+import com.dongrame.api.domain.place.dao.PlaceRepository;
+import com.dongrame.api.domain.place.entity.Place;
+import com.dongrame.api.domain.review.dao.CommentLikeRepository;
+import com.dongrame.api.domain.review.dao.ReviewCommentRepository;
+import com.dongrame.api.domain.review.dao.ReviewLikeRepository;
+import com.dongrame.api.domain.review.dao.ReviewRepository;
+import com.dongrame.api.domain.review.entity.*;
 import com.dongrame.api.domain.user.dao.UserRepository;
 import com.dongrame.api.domain.user.dto.UserResponseDto;
 import com.dongrame.api.domain.user.dto.UserUpdateRequestDto;
@@ -17,6 +24,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,20 +33,15 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RefreshTokenService refreshTokenService;
+    private final PlaceRepository placeRepository;
+    private final ReviewRepository reviewRepository;
+    private final ReviewCommentRepository reviewCommentRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
     public Long save(String kakaoId, String nickname, String profileImage, String email) {
 
-        Optional<User> existingUser = userRepository.findByKakaoIdAndActiveFalse(kakaoId);
-
-        if (existingUser.isPresent()) {
-            User user = existingUser.get();
-            user.setActive(true);
-            user.setNickname(nickname);
-            user.setProfileImage(profileImage);
-            user.setEmail(email);;
-            return userRepository.save(user).getId();
-        }
 
         User newUser = User.builder()
                 .active(true)
@@ -46,9 +49,66 @@ public class UserService {
                 .nickname(nickname)
                 .profileImage(profileImage)
                 .email(email)
+                .level(1)
                 .build();
 
         return userRepository.save(newUser).getId();
+    }
+
+    @Transactional
+    public void activeState(String kakaoId, String nickname, String profileImage, String email) {
+        Optional<User> existingUser = userRepository.findByKakaoIdAndActiveFalse(kakaoId);
+
+        if (existingUser.isPresent() && !existingUser.get().isActive()) {
+            User user = existingUser.get();
+            user.setActive(true);
+            user.setNickname(nickname);
+            user.setProfileImage(profileImage);
+            user.setEmail(email);
+
+            //유저 삭제시 처리/////////////////////////////////////////////
+            List<Review> reviews= reviewRepository.findByUserIdAndUserActiveTrue(user.getId());
+            List<ReviewComment> reviewComments =reviewCommentRepository.findByUserIdAndUserActiveTrue(user.getId());
+            List<ReviewLike> reviewLikes=reviewLikeRepository.findByUser(user);
+            List<CommentLike> commentLikes=commentLikeRepository.findByUser(user);
+
+            for(Review review:reviews){
+                Place place=review.getPlace();
+                Score score= review.getScore();
+                if(score== Score.GOOD){
+                    place.setGOOD(place.getGOOD()+1);
+                }
+                else if(score== Score.SOSO){
+                    place.setSOSO(place.getSOSO()+1);
+                }
+                else if(score== Score.BAD){
+                    place.setBAD(place.getBAD()+1);
+                }
+                place.setReviewNum(place.getReviewNum()+1);
+                placeRepository.save(place);
+            }
+
+            for(ReviewComment reviewComment:reviewComments){
+                Review review=reviewComment.getReview();
+                review.setCommentNum(review.getCommentNum()+1);
+                reviewRepository.save(review);
+            }
+
+            for(ReviewLike reviewLike:reviewLikes){
+                Review review=reviewLike.getReview();
+                review.setLikeNum(review.getLikeNum()+1);
+                reviewRepository.save(review);
+            }
+
+            for(CommentLike commentLike:commentLikes){
+                ReviewComment reviewComment=commentLike.getReviewComment();
+                reviewComment.setLikeNum(reviewComment.getLikeNum()+1);
+                reviewCommentRepository.save(reviewComment);
+            }
+            ////////////////////////////////////////////////////////////////////
+            userRepository.save(user);
+        }
+
     }
 
     @Transactional
@@ -63,6 +123,11 @@ public class UserService {
         User user = getCurrentUser();
         user.update(dto);
         return user.getId();
+    }
+
+    @Transactional
+    public void updateLevel(User user){
+        user.updateLevel();
     }
 
     @Transactional
@@ -92,6 +157,49 @@ public class UserService {
     @Transactional
     public Long deleteUser() {
         User user = getCurrentUser();
+
+        //유저 삭제시 처리/////////////////////////////////////////////
+        List<Review> reviews= reviewRepository.findByUserIdAndUserActiveTrue(user.getId());
+        List<ReviewComment> reviewComments =reviewCommentRepository.findByUserIdAndUserActiveTrue(user.getId());
+        List<ReviewLike> reviewLikes=reviewLikeRepository.findByUser(user);
+        List<CommentLike> commentLikes=commentLikeRepository.findByUser(user);
+
+        for(Review review:reviews){
+            Place place=review.getPlace();
+            Score score= review.getScore();
+            if(score== Score.GOOD){
+                place.setGOOD(place.getGOOD()-1);
+            }
+            else if(score== Score.SOSO){
+                place.setSOSO(place.getSOSO()-1);
+            }
+            else if(score== Score.BAD){
+                place.setBAD(place.getBAD()-1);
+            }
+            place.setReviewNum(place.getReviewNum()-1);
+            placeRepository.save(place);
+        }
+
+        for(ReviewComment reviewComment:reviewComments){
+            Review review=reviewComment.getReview();
+            review.setCommentNum(review.getCommentNum()-1);
+            reviewRepository.save(review);
+        }
+
+        for(ReviewLike reviewLike:reviewLikes){
+            Review review=reviewLike.getReview();
+            review.setLikeNum(review.getLikeNum()-1);
+            reviewRepository.save(review);
+        }
+
+        for(CommentLike commentLike:commentLikes){
+            ReviewComment reviewComment=commentLike.getReviewComment();
+            reviewComment.setLikeNum(reviewComment.getLikeNum()-1);
+            reviewCommentRepository.save(reviewComment);
+        }
+        ///////////////////////////////////////////////////////
+
+
         user.setActive(false);
         SecurityContextHolder.clearContext();
         refreshTokenService.deleteRefreshToken(user.getKakaoId());
@@ -122,4 +230,3 @@ public class UserService {
         }
     }
 }
-
